@@ -1,0 +1,65 @@
+from enum import Enum
+from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+GSTIN_PATTERN = r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+
+
+class ApplicabilityStatus(str, Enum):
+    APPLICABLE = "Applicable"
+    MORE_INFO_REQUIRED = "More Info Required"
+    NOT_RELEVANT = "Not Relevant"
+
+
+class BusinessProfile(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, str_strip_whitespace=True)
+
+    business_type: str = Field(min_length=1, alias="businessType")
+    industry: str = Field(min_length=1)
+    state: str = Field(min_length=1)
+    city: str = Field(min_length=1)
+    employees: int = Field(ge=0)
+    turnover: str = Field(min_length=1)
+    activity: str = Field(min_length=10)
+    operations: str = Field(min_length=1)
+    gstin: Optional[str] = None
+
+    @field_validator("gstin")
+    @classmethod
+    def validate_gstin(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip().upper()
+        if not value:
+            return None
+        import re
+
+        if not re.fullmatch(GSTIN_PATTERN, value):
+            raise ValueError("Invalid GSTIN format")
+        return value
+
+
+class RegistrationAssessment(BaseModel):
+    name: str
+    status: ApplicabilityStatus
+    why_relevant: str
+    required_documents: list[str]
+    information_still_required: list[str]
+    official_links: list[str]
+    verification_notes: list[str]
+
+
+class ActionItem(BaseModel):
+    step: int
+    title: str
+    detail: str
+
+
+class BusinessSetupReport(BaseModel):
+    profile_summary: str
+    potential_registrations: list[RegistrationAssessment]
+    information_still_required: list[str]
+    suggested_sequence: list[ActionItem]
+    disclaimer: str

@@ -66,11 +66,33 @@ const INITIAL_STATE: FormState = {
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-type ToolReview = {
-  tool_name: string;
-  pros: string[];
-  cons: string[];
-  rating_out_of_10: number;
+type ApplicabilityStatus =
+  | "Applicable"
+  | "More Info Required"
+  | "Not Relevant";
+
+type RegistrationAssessment = {
+  name: string;
+  status: ApplicabilityStatus;
+  why_relevant: string;
+  required_documents: string[];
+  information_still_required: string[];
+  official_links: string[];
+  verification_notes: string[];
+};
+
+type ActionItem = {
+  step: number;
+  title: string;
+  detail: string;
+};
+
+type BusinessSetupReport = {
+  profile_summary: string;
+  potential_registrations: RegistrationAssessment[];
+  information_still_required: string[];
+  suggested_sequence: ActionItem[];
+  disclaimer: string;
 };
 
 export default function Home() {
@@ -80,7 +102,7 @@ export default function Home() {
   >({});
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [review, setReview] = useState<ToolReview | null>(null);
+  const [report, setReport] = useState<BusinessSetupReport | null>(null);
 
   const updateField = (field: keyof FormState, value: string) => {
     setForm((prev) => ({
@@ -130,14 +152,24 @@ export default function Home() {
       const res = await fetch("/api/evaluate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tool_name: form.activity.trim() }),
+        body: JSON.stringify({
+          businessType: form.businessType,
+          industry: form.industry,
+          state: form.state,
+          city: form.city,
+          employees: Number(form.employees),
+          turnover: form.turnover,
+          activity: form.activity,
+          operations: form.operations,
+          gstin: form.gstin,
+        }),
       });
 
       if (!res.ok) {
         throw new Error(`Request failed with status ${res.status}`);
       }
 
-      setReview((await res.json()) as ToolReview);
+      setReport((await res.json()) as BusinessSetupReport);
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -154,7 +186,7 @@ export default function Home() {
     setErrors({});
     setStatus("idle");
     setErrorMessage("");
-    setReview(null);
+    setReport(null);
   };
 
   return (
@@ -178,7 +210,7 @@ export default function Home() {
         {/* Card */}
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
           {status === "success" ? (
-            <SuccessState onReset={handleReset} review={review} />
+              <SuccessState onReset={handleReset} report={report} />
           ) : (
             <form onSubmit={handleSubmit} noValidate className="p-6 sm:p-8">
               <div className="mb-6 border-b border-slate-100 pb-4">
@@ -480,10 +512,10 @@ function Spinner() {
 
 function SuccessState({
   onReset,
-  review,
+  report,
 }: {
   onReset: () => void;
-  review: ToolReview | null;
+  report: BusinessSetupReport | null;
 }) {
   return (
     <div className="flex flex-col items-center px-6 py-14 text-center sm:px-10">
@@ -505,34 +537,37 @@ function SuccessState({
       <h2 className="text-xl font-bold text-slate-900">
         Your Profile Is Analyzed
       </h2>
-      {review ? (
-        <div className="mt-5 w-full max-w-md text-left">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <span className="text-sm font-medium text-slate-700">
-              Backend rating
-            </span>
-            <span className="text-lg font-bold text-blue-600">
-              {review.rating_out_of_10}/10
-            </span>
-          </div>
-          <p className="mt-4 text-sm font-semibold text-slate-700">Strengths</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-500">
-            {review.pros.map((pro) => (
-              <li key={pro}>{pro}</li>
-            ))}
-          </ul>
-          <p className="mt-4 text-sm font-semibold text-slate-700">
-            Considerations
+      {report ? (
+        <div className="mt-5 w-full max-w-xl text-left">
+          <p className="rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+            {report.profile_summary}
           </p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-500">
-            {review.cons.map((con) => (
-              <li key={con}>{con}</li>
+
+          <p className="mt-4 text-sm font-semibold text-slate-700">
+            Potential registrations
+          </p>
+          <div className="mt-2 space-y-3">
+            {report.potential_registrations.map((item) => (
+              <div
+                key={item.name}
+                className="rounded-lg border border-slate-200 px-3 py-3"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-slate-800">{item.name}</p>
+                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+                    {item.status}
+                  </span>
+                </div>
+                <p className="mt-1.5 text-sm text-slate-600">{item.why_relevant}</p>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          <p className="mt-4 text-sm text-slate-500">{report.disclaimer}</p>
         </div>
       ) : (
         <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-500">
-          The Python backend returned no review data.
+          The Python backend returned no setup report data.
         </p>
       )}
       <button
