@@ -22,6 +22,39 @@ to apply. This project aims to turn that into a guided, AI-assisted workflow:
 Business Info → AI Agent → Government Data/API → Reasoning → Decision → Action → Outcome
 ```
 
+## MVP scope (frozen)
+
+This section defines what version `v1` must deliver end-to-end.
+
+### MVP output: one personalized business setup report
+
+For each submitted business profile, the system will produce one structured report with:
+
+- Potentially relevant registrations and licences
+- Applicability status per item:
+  - `Applicable`
+  - `More Info Required`
+  - `Not Relevant`
+- Why the item is classified that way
+- Required documents and information (from verified sources)
+- Missing inputs required to make a confident decision
+- Official application/source links
+- Suggested sequence of actions (recommended next steps)
+- Verification notes for items that depend on state-specific or case-specific rules
+
+### Supported geography (MVP)
+
+- Country coverage: India-wide (baseline)
+- State handling: limited state-specific logic in MVP
+  - The system will apply state-level rules only where they are explicitly modeled and source-verified
+  - For uncovered state-level rules, output will default to `More Info Required` with a verification note
+
+### Out of scope for MVP
+
+- Full legal advisory or legal representation
+- Complete automation for every state/municipal licensing edge case
+- Guarantee of approval timelines, fees, or processing outcomes
+
 ### Design principle: don't hallucinate compliance facts
 
 Registration eligibility rules, fees, and required documents must come from a
@@ -96,3 +129,7 @@ Output is intended as guidance to help entrepreneurs navigate registration
 requirements, not as legal or official government advice. Always verify
 current rules, fees, and procedures with the relevant official government
 source before acting.
+
+The tool may surface `More Info Required` when details are missing or where
+state/industry interpretation is uncertain. In such cases, users should verify
+with the relevant government department or a qualified professional before filing.
