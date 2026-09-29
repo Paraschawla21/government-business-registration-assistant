@@ -95,6 +95,16 @@ ollama pull qwen2.5-coder:7b
 uvicorn api:app --reload --port 8000
 ```
 
+Optional live GST verification setup (Setu):
+
+```bash
+export SETU_GST_VERIFY_URL="https://api.setu.co/data/gst/{gstin}"
+export SETU_BEARER_TOKEN="your_setu_bearer_token"
+```
+
+If these variables are not set, the app still runs and returns deterministic
+registration guidance; GST verification is simply marked as not configured.
+
 ### Frontend
 
 ```bash
