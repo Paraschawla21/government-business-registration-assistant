@@ -113,6 +113,23 @@ npm install
 npm run dev
 ```
 
+### Tests
+
+Frontend tests:
+
+```bash
+cd client
+npm test
+```
+
+Backend tests:
+
+```bash
+cd server
+source env/bin/activate
+pytest
+```
+
 Open [http://localhost:3000](http://localhost:3000). The frontend proxies
 `/api/evaluate` requests to the FastAPI backend at `http://127.0.0.1:8000`
 (configurable via `PYTHON_BACKEND_URL`).
