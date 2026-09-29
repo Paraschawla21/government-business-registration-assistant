@@ -62,4 +62,5 @@ class BusinessSetupReport(BaseModel):
     potential_registrations: list[RegistrationAssessment]
     information_still_required: list[str]
     suggested_sequence: list[ActionItem]
+    gst_verification: Optional[dict] = None
     disclaimer: str
