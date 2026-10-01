@@ -267,6 +267,43 @@ Open [http://localhost:3000](http://localhost:3000). The frontend proxies
 - Demo runbook: `docs/demo-checklist.md`
 - Screenshot placeholders: `docs/screenshots/README.md`
 
+## Demo Gallery
+
+> Add/update screenshots in `docs/screenshots/` and this section will render a
+> portfolio-ready walkthrough.
+
+### 1) Business Profile Input
+
+![Business Profile Form](docs/screenshots/01-form-input.png)
+
+### 2) Generated Report Overview
+
+![Report Overview](docs/screenshots/02-report-overview.png)
+
+### 3) Registration Details (Status, Docs, Missing Info)
+
+![Registration Details](docs/screenshots/03-registration-details.png)
+
+### 4) Data Source Logs
+
+![Data Sources](docs/screenshots/04-data-sources.png)
+
+### 5) Action Outputs (MD/CSV/PDF)
+
+![Action Outputs](docs/screenshots/05-action-outputs.png)
+
+### 6) Google Sheet Tracker Result
+
+![Google Sheet Result](docs/screenshots/06-google-sheet-result.png)
+
+### 7) Email Delivery Result
+
+![Email Result](docs/screenshots/07-email-result.png)
+
+### 8) API Docs
+
+![API Docs](docs/screenshots/08-api-docs.png)
+
 ## Disclaimer
 
 Output is intended as guidance to help entrepreneurs navigate registration
