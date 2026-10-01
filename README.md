@@ -99,6 +99,16 @@ Input now supports optional PAN and optional GSTIN; when provided, the backend
 attempts live verification via configured Setu endpoints and logs whether a
 live API source or fallback path was used.
 
+### Verification modes (recommended for demos)
+
+Set `VERIFICATION_MODE` to control behavior:
+
+- `mock`: no external calls; returns deterministic mock verification data
+- `sandbox`: calls configured sandbox endpoints and labels source as `sandbox_api`
+- `live`: calls configured production endpoints and labels source as `live_api`
+
+For resume/demo usage without a business account, use `VERIFICATION_MODE=mock`.
+
 ## AI agent orchestration
 
 The API now uses an orchestration layer (`server/agent.py`) with this flow:
@@ -154,6 +164,7 @@ export SETU_BEARER_TOKEN="your_setu_bearer_token"
 export SETU_PAN_VERIFY_URL="https://api.setu.co/data/pan/{pan}"
 export AGENT_ENABLE_LLM="false"
 export OLLAMA_MODEL="qwen2.5-coder:7b"
+export VERIFICATION_MODE="sandbox"
 export MAX_REQUEST_BYTES="65536"
 export GOOGLE_SHEETS_ID="your_google_sheet_id"
 export GOOGLE_SHEETS_API_KEY="your_google_api_key"

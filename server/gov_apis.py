@@ -5,6 +5,35 @@ from typing import Any, Optional
 from urllib import error, request
 
 
+def _verification_mode() -> str:
+    return os.getenv("VERIFICATION_MODE", "sandbox").strip().lower()
+
+
+def _mock_gst_result(gstin: str) -> dict[str, Any]:
+    return {
+        "checked": True,
+        "provider": "mock",
+        "gstin": gstin,
+        "legal_name": "Demo Business Private Limited",
+        "trade_name": "Demo Biz",
+        "status": "ACTIVE",
+        "message": "GSTIN verification returned from mock mode.",
+        "source_type": "mock_api",
+    }
+
+
+def _mock_pan_result(pan: str) -> dict[str, Any]:
+    return {
+        "checked": True,
+        "provider": "mock",
+        "pan": pan.upper(),
+        "name": "DEMO ENTITY",
+        "status": "VALID",
+        "message": "PAN verification returned from mock mode.",
+        "source_type": "mock_api",
+    }
+
+
 def _extract_nested_value(payload: Any, keys: set[str]) -> Optional[str]:
     if isinstance(payload, dict):
         for key, value in payload.items():
@@ -30,6 +59,10 @@ def verify_gstin_with_setu(gstin: str) -> dict[str, Any]:
       e.g. https://api.setu.co/data/gst/{gstin}
     - SETU_BEARER_TOKEN
     """
+
+    mode = _verification_mode()
+    if mode == "mock":
+        return _mock_gst_result(gstin)
 
     base_url = os.getenv("SETU_GST_VERIFY_URL", "").strip()
     token = os.getenv("SETU_BEARER_TOKEN", "").strip()
@@ -78,7 +111,7 @@ def verify_gstin_with_setu(gstin: str) -> dict[str, Any]:
                 "trade_name": trade_name,
                 "status": status,
                 "message": "GSTIN verification completed via Setu.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
                 "raw": data,
             }
         except error.HTTPError as exc:
@@ -90,7 +123,7 @@ def verify_gstin_with_setu(gstin: str) -> dict[str, Any]:
                 "provider": "setu",
                 "gstin": gstin,
                 "message": f"Setu GST verification failed with HTTP {exc.code}.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
             }
         except Exception:
             if attempt < attempts:
@@ -101,7 +134,7 @@ def verify_gstin_with_setu(gstin: str) -> dict[str, Any]:
                 "provider": "setu",
                 "gstin": gstin,
                 "message": "Setu GST verification could not be completed.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
             }
 
     return {
@@ -109,7 +142,7 @@ def verify_gstin_with_setu(gstin: str) -> dict[str, Any]:
         "provider": "setu",
         "gstin": gstin,
         "message": "Setu GST verification timed out after retries.",
-        "source_type": "live_api",
+        "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
     }
 
 
@@ -122,6 +155,10 @@ def verify_pan_with_setu(pan: str) -> dict[str, Any]:
       e.g. https://api.setu.co/data/pan/{pan}
     - SETU_BEARER_TOKEN
     """
+
+    mode = _verification_mode()
+    if mode == "mock":
+        return _mock_pan_result(pan)
 
     base_url = os.getenv("SETU_PAN_VERIFY_URL", "").strip()
     token = os.getenv("SETU_BEARER_TOKEN", "").strip()
@@ -164,7 +201,7 @@ def verify_pan_with_setu(pan: str) -> dict[str, Any]:
                 "name": holder_name,
                 "status": status,
                 "message": "PAN verification completed via Setu.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
                 "raw": data,
             }
         except error.HTTPError as exc:
@@ -176,7 +213,7 @@ def verify_pan_with_setu(pan: str) -> dict[str, Any]:
                 "provider": "setu",
                 "pan": pan.upper(),
                 "message": f"Setu PAN verification failed with HTTP {exc.code}.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
             }
         except Exception:
             if attempt < attempts:
@@ -187,7 +224,7 @@ def verify_pan_with_setu(pan: str) -> dict[str, Any]:
                 "provider": "setu",
                 "pan": pan.upper(),
                 "message": "Setu PAN verification could not be completed.",
-                "source_type": "live_api",
+                "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
             }
 
     return {
@@ -195,5 +232,5 @@ def verify_pan_with_setu(pan: str) -> dict[str, Any]:
         "provider": "setu",
         "pan": pan.upper(),
         "message": "Setu PAN verification timed out after retries.",
-        "source_type": "live_api",
+        "source_type": "sandbox_api" if mode == "sandbox" else "live_api",
     }
