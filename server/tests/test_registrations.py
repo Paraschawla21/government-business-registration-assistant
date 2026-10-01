@@ -129,3 +129,24 @@ def test_state_portal_routing_for_maharashtra_links():
     assert shops.official_links[0] == "https://aaplesarkar.mahaonline.gov.in/"
     assert pt.official_links[0] == "https://www.mahagst.gov.in/"
     assert trade.official_links[0] == "https://portal.mcgm.gov.in/"
+
+
+def test_state_portal_routing_for_karnataka_links():
+    profile = BusinessProfile(
+        businessType="Private Limited",
+        industry="Professional Services",
+        state="Karnataka",
+        city="Bengaluru",
+        employees=8,
+        turnover="20-40 Lakhs",
+        activity="Consulting and managed services",
+        operations="offline",
+        gstin=None,
+        pan=None,
+    )
+    results, _ = evaluate_registrations(profile)
+    shops = next(item for item in results if item.name == "Shops and Establishments Registration")
+    pt = next(item for item in results if item.name == "Professional Tax Registration")
+
+    assert shops.official_links[0] == "https://www.ekarmika.karnataka.gov.in/ekarmika/static/home.aspx"
+    assert pt.official_links[0] == "https://ptax.karnataka.gov.in/"
