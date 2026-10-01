@@ -11,6 +11,7 @@ from typing import Optional
 from urllib import error, request
 
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.utils import simpleSplit
 from reportlab.pdfgen import canvas
 
 from schemas import ActionResult, BusinessSetupReport
@@ -21,6 +22,12 @@ def _clean_line(text: str, max_len: int = 110) -> str:
         return ""
     compact = " ".join(text.split())
     return compact[:max_len]
+
+
+def _status_text(status: object) -> str:
+    if hasattr(status, "value"):
+        return str(getattr(status, "value"))
+    return str(status)
 
 
 def _mask_secret(value: str) -> str:
@@ -43,7 +50,7 @@ def generate_markdown_report(report: BusinessSetupReport) -> ActionResult:
     lines.append("## Potential Registrations")
     for item in report.potential_registrations:
         lines.append(f"### {item.name}")
-        lines.append(f"- Status: {item.status}")
+        lines.append(f"- Status: {_status_text(item.status)}")
         if item.issuing_authority:
             lines.append(f"- Issuing Authority: {item.issuing_authority}")
         lines.append(f"- Why Relevant: {item.why_relevant}")
@@ -103,7 +110,7 @@ def generate_csv_tracker(report: BusinessSetupReport) -> ActionResult:
         writer.writerow(
             [
                 item.name,
-                item.status,
+                _status_text(item.status),
                 item.why_relevant,
                 " | ".join(item.required_documents),
                 " | ".join(item.information_still_required),
@@ -136,14 +143,22 @@ def generate_pdf_report(report: BusinessSetupReport) -> ActionResult:
     pdf.drawString(40, y, f"Generated At: {datetime.utcnow().isoformat()}Z")
     y -= 20
 
-    def write_line(text: str, bold: bool = False):
+    def write_line(text: str, bold: bool = False, indent: int = 0):
         nonlocal y
-        if y < 60:
-            pdf.showPage()
-            y = height - 40
-        pdf.setFont("Helvetica-Bold" if bold else "Helvetica", 10 if bold else 9)
-        pdf.drawString(40, y, _clean_line(text, 120))
-        y -= 14
+        font_name = "Helvetica-Bold" if bold else "Helvetica"
+        font_size = 10 if bold else 9
+        usable_width = width - 80 - indent
+        wrapped = simpleSplit(" ".join(text.split()), font_name, font_size, usable_width)
+        if not wrapped:
+            wrapped = [""]
+
+        for line in wrapped:
+            if y < 60:
+                pdf.showPage()
+                y = height - 40
+            pdf.setFont(font_name, font_size)
+            pdf.drawString(40 + indent, y, line)
+            y -= 14
 
     write_line("Profile Summary", bold=True)
     write_line(report.profile_summary)
@@ -151,15 +166,15 @@ def generate_pdf_report(report: BusinessSetupReport) -> ActionResult:
 
     write_line("Potential Registrations", bold=True)
     for item in report.potential_registrations:
-        write_line(f"- {item.name} [{item.status}]", bold=True)
-        write_line(f"  Why: {item.why_relevant}")
+        write_line(f"- {item.name} [{_status_text(item.status)}]", bold=True)
+        write_line(f"Why: {item.why_relevant}", indent=12)
         if item.official_links:
-            write_line(f"  Link: {item.official_links[0]}")
+            write_line(f"Link: {item.official_links[0]}", indent=12)
 
     y -= 6
     write_line("Suggested Sequence", bold=True)
     for step in report.suggested_sequence:
-        write_line(f"{step.step}. {step.title}: {step.detail}")
+        write_line(f"{step.step}. {step.title}: {step.detail}", indent=8)
 
     y -= 6
     write_line("Disclaimer", bold=True)
