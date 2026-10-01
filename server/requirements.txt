@@ -4,3 +4,4 @@ pydantic
 ollama
 pytest
 httpx
+reportlab

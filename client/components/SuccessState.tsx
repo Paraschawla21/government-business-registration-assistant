@@ -10,6 +10,21 @@ function downloadTextArtifact(filename: string, content: string) {
   URL.revokeObjectURL(url);
 }
 
+function downloadPdfArtifact(filename: string, base64Content: string) {
+  const binary = atob(base64Content);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  const blob = new Blob([bytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function SuccessState({
   onReset,
   report,
@@ -131,6 +146,27 @@ export function SuccessState({
                       >
                         Download {result.artifact_filename}
                       </button>
+                    )}
+                    {result.artifact_base64 && result.artifact_filename && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          downloadPdfArtifact(result.artifact_filename!, result.artifact_base64!)
+                        }
+                        className="mt-2 ml-2 rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
+                      >
+                        Download {result.artifact_filename}
+                      </button>
+                    )}
+                    {result.artifact_url && (
+                      <a
+                        href={result.artifact_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-2 ml-2 inline-block rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                      >
+                        Open Link
+                      </a>
                     )}
                   </div>
                 ))}

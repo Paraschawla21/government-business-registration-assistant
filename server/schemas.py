@@ -88,7 +88,9 @@ class ActionResult(BaseModel):
     status: str
     message: str
     artifact_url: Optional[str] = None
+    artifact_mime_type: Optional[str] = None
     artifact_content: Optional[str] = None
+    artifact_base64: Optional[str] = None
     artifact_filename: Optional[str] = None
 
 
