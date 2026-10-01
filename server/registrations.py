@@ -6,11 +6,40 @@ from schemas import ApplicabilityStatus, BusinessProfile, DataSourceLog, Registr
 
 
 CATALOG_PATH = Path(__file__).resolve().parent / "data" / "registrations.json"
+STATE_PORTALS_PATH = Path(__file__).resolve().parent / "data" / "india_registration_portals.json"
 
 
 def _load_catalog() -> list[dict[str, Any]]:
     with CATALOG_PATH.open("r", encoding="utf-8") as file:
         return json.load(file)
+
+
+def _load_state_portal_map() -> dict[str, dict[str, str]]:
+    with STATE_PORTALS_PATH.open("r", encoding="utf-8") as file:
+        rows = json.load(file)
+
+    mapping: dict[str, dict[str, str]] = {}
+    for row in rows:
+        state_name = row.get("State / Union Territory", "").strip()
+        if not state_name:
+            continue
+        mapping[state_name] = {
+            "sne_url": row.get("S&E URL", "").strip(),
+            "pt_url": row.get("PT URL", "").strip(),
+            "trade_url": row.get("Trade Licence URL", "").strip(),
+        }
+    return mapping
+
+
+def _resolve_state_portals(profile_state: str, state_map: dict[str, dict[str, str]]) -> dict[str, str]:
+    normalized = profile_state.strip().lower()
+    for key, value in state_map.items():
+        key_norm = key.lower()
+        if normalized == key_norm:
+            return value
+        if normalized in key_norm or key_norm in normalized:
+            return value
+    return {}
 
 
 def _turnover_rank(turnover: str) -> int:
@@ -50,6 +79,8 @@ def _build_assessment(
 
 def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationAssessment], DataSourceLog]:
     catalog = _load_catalog()
+    state_portals = _load_state_portal_map()
+    resolved_portals = _resolve_state_portals(profile.state, state_portals)
     results: list[RegistrationAssessment] = []
 
     for entry in catalog:
@@ -102,6 +133,12 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
             continue
 
         if "operations_applicable" in conditions:
+            official_links = [entry.get("official_url", "")]
+            if name == "Shops and Establishments Registration" and resolved_portals.get("sne_url"):
+                official_links = [resolved_portals["sne_url"]]
+            if name == "Trade Licence" and resolved_portals.get("trade_url"):
+                official_links = [resolved_portals["trade_url"]]
+
             if profile.operations in conditions.get("operations_applicable", []):
                 results.append(
                     _build_assessment(
@@ -111,6 +148,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         conditions.get("requires_additional_info", []),
                     )
                 )
+                results[-1].official_links = official_links
             elif profile.operations in conditions.get("operations_not_relevant", []):
                 results.append(
                     _build_assessment(
@@ -120,6 +158,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         [],
                     )
                 )
+                results[-1].official_links = official_links
             else:
                 results.append(
                     _build_assessment(
@@ -129,6 +168,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         conditions.get("requires_additional_info", []),
                     )
                 )
+                results[-1].official_links = official_links
             continue
 
         if "employees_min_applicable" in conditions:
@@ -175,6 +215,10 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
             continue
 
         if conditions.get("state_specific"):
+            official_links = [entry.get("official_url", "")]
+            if name == "Professional Tax Registration" and resolved_portals.get("pt_url"):
+                official_links = [resolved_portals["pt_url"]]
+
             if profile.state in conditions.get("states_likely_applicable", []):
                 results.append(
                     _build_assessment(
@@ -184,6 +228,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         conditions.get("requires_additional_info", []),
                     )
                 )
+                results[-1].official_links = official_links
             else:
                 results.append(
                     _build_assessment(
@@ -193,6 +238,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         conditions.get("requires_additional_info", []),
                     )
                 )
+                results[-1].official_links = official_links
             continue
 
         if "activity_keywords" in conditions:

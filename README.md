@@ -111,6 +111,7 @@ server/   FastAPI backend — deterministic evaluator + optional live verificati
 This project now uses a structured registration knowledge base at:
 
 - `server/data/registrations.json`
+- `server/data/india_registration_portals.json` (state-wise S&E/PT/Trade portal routing)
 
 Each entry includes:
 

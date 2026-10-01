@@ -133,8 +133,8 @@
     "id": "esic",
     "name": "ESIC Registration",
     "issuing_authority": "Employees' State Insurance Corporation",
-    "official_url": "https://www.esic.gov.in/",
-    "source_reference_url": "https://www.esic.gov.in/",
+    "official_url": "https://portal.esic.gov.in/ESICInsurance1/ESICInsurancePortal/ESICSignup.aspx",
+    "source_reference_url": "https://portal.esic.gov.in/ESICInsurance1/ESICInsurancePortal/ESICSignup.aspx",
     "source_reference_date": "2026-10-01",
     "conditions": {
       "employees_min_applicable": 10,

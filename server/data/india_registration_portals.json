@@ -1,0 +1,326 @@
+[
+  {
+    "State / Union Territory": "Andaman & Nicobar",
+    "Shops & Establishments Portal Name": "A&N Labour Dept",
+    "S&E URL": "https://labour.and.nic.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "PBMC (Port Blair)",
+    "Trade Licence URL": "https://pbmc.gov.in/"
+  },
+  {
+    "State / Union Territory": "Andhra Pradesh",
+    "Shops & Establishments Portal Name": "AP Labour Dept",
+    "S&E URL": "https://labour.ap.gov.in/",
+    "Professional Tax Portal Name": "AP Commercial Taxes",
+    "PT URL": "https://www.apct.gov.in/",
+    "Trade Licence / Municipality Name": "AP CDMA (Centralized)",
+    "Trade Licence URL": "https://cdma.ap.gov.in/"
+  },
+  {
+    "State / Union Territory": "Arunachal Pradesh",
+    "Shops & Establishments Portal Name": "EoDB Arunachal",
+    "S&E URL": "https://eodb.arunachal.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "Itanagar Municipal Corp",
+    "Trade Licence URL": "https://imc.arunachal.gov.in/"
+  },
+  {
+    "State / Union Territory": "Assam",
+    "Shops & Establishments Portal Name": "Assam Labour Dept",
+    "S&E URL": "https://labour.assam.gov.in/",
+    "Professional Tax Portal Name": "Assam Taxes",
+    "PT URL": "https://tax.assam.gov.in/",
+    "Trade Licence / Municipality Name": "GMC (Guwahati)",
+    "Trade Licence URL": "https://gmc.assam.gov.in/"
+  },
+  {
+    "State / Union Territory": "Bihar",
+    "Shops & Establishments Portal Name": "Bihar Labour Dept",
+    "S&E URL": "https://state.bihar.gov.in/labour/",
+    "Professional Tax Portal Name": "Bihar Commercial Taxes",
+    "PT URL": "https://biharcommercialtax.gov.in/",
+    "Trade Licence / Municipality Name": "Bihar Nagar Seva (Centralized)",
+    "Trade Licence URL": "https://nagarseva.bihar.gov.in/"
+  },
+  {
+    "State / Union Territory": "Chandigarh (UT)",
+    "Shops & Establishments Portal Name": "Labour Dept Chandigarh",
+    "S&E URL": "http://labour.chd.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "MC Chandigarh",
+    "Trade Licence URL": "https://mcchandigarh.gov.in/"
+  },
+  {
+    "State / Union Territory": "Chhattisgarh",
+    "Shops & Establishments Portal Name": "CG Labour Dept",
+    "S&E URL": "https://cglabour.nic.in/",
+    "Professional Tax Portal Name": "CG Commercial Tax",
+    "PT URL": "https://cgcomtax.gov.in/",
+    "Trade Licence / Municipality Name": "CG SUDA (Centralized)",
+    "Trade Licence URL": "https://cgsuda.com/"
+  },
+  {
+    "State / Union Territory": "DNHDD (UT)",
+    "Shops & Establishments Portal Name": "Daman & Diu Labour",
+    "S&E URL": "https://daman.nic.in/labour.aspx",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "Silvassa Municipal Council",
+    "Trade Licence URL": "https://smcsilvassa.in/"
+  },
+  {
+    "State / Union Territory": "Delhi (NCT)",
+    "Shops & Establishments Portal Name": "Delhi Labour Portal",
+    "S&E URL": "https://labour.delhi.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "MCD (Delhi Centralized)",
+    "Trade Licence URL": "https://mcdonline.nic.in/"
+  },
+  {
+    "State / Union Territory": "Goa",
+    "Shops & Establishments Portal Name": "Goa Online / Labour",
+    "S&E URL": "https://goaonline.gov.in/",
+    "Professional Tax Portal Name": "Goa Commercial Taxes",
+    "PT URL": "https://goacomtax.gov.in/",
+    "Trade Licence / Municipality Name": "CCP (Panaji)",
+    "Trade Licence URL": "https://ccpgoa.com/"
+  },
+  {
+    "State / Union Territory": "Gujarat",
+    "Shops & Establishments Portal Name": "e-Nirman / Sanman",
+    "S&E URL": "https://sanman.gujarat.gov.in/",
+    "Professional Tax Portal Name": "Gujarat Commercial Tax",
+    "PT URL": "https://commercialtax.gujarat.gov.in/",
+    "Trade Licence / Municipality Name": "AMC (Ahmedabad)",
+    "Trade Licence URL": "https://ahmedabadcity.gov.in/"
+  },
+  {
+    "State / Union Territory": "Haryana",
+    "Shops & Establishments Portal Name": "Haryana Labour",
+    "S&E URL": "https://hrylabour.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "ULB Haryana (Centralized)",
+    "Trade Licence URL": "https://ulbharyana.gov.in/"
+  },
+  {
+    "State / Union Territory": "Himachal Pradesh",
+    "Shops & Establishments Portal Name": "HP Labour & Employment",
+    "S&E URL": "https://himachal.nic.in/labour",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "MC Shimla",
+    "Trade Licence URL": "https://mcshimla.in/"
+  },
+  {
+    "State / Union Territory": "Jammu & Kashmir",
+    "Shops & Establishments Portal Name": "J&K Labour Dept",
+    "S&E URL": "https://jklabour.com/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "SMC (Srinagar)",
+    "Trade Licence URL": "https://smcsrinagar.in/"
+  },
+  {
+    "State / Union Territory": "Jharkhand",
+    "Shops & Establishments Portal Name": "Shramadhan Jharkhand",
+    "S&E URL": "https://shramadhan.jharkhand.gov.in/",
+    "Professional Tax Portal Name": "Jharkhand Commercial Tax",
+    "PT URL": "https://jharkhandcomtax.gov.in/",
+    "Trade Licence / Municipality Name": "UDHD Jharkhand (Centralized)",
+    "Trade Licence URL": "https://udhd.jharkhand.gov.in/"
+  },
+  {
+    "State / Union Territory": "Karnataka",
+    "Shops & Establishments Portal Name": "e-Karmika",
+    "S&E URL": "https://ekarmika.karnataka.gov.in/",
+    "Professional Tax Portal Name": "e-Prerana (CTD)",
+    "PT URL": "https://pt.kar.nic.in/",
+    "Trade Licence / Municipality Name": "BBMP (Bengaluru)",
+    "Trade Licence URL": "https://bbmp.gov.in/"
+  },
+  {
+    "State / Union Territory": "Kerala",
+    "Shops & Establishments Portal Name": "LCOMS Kerala",
+    "S&E URL": "https://lcoms.kerala.gov.in/",
+    "Professional Tax Portal Name": "K-SMART (Local Govt)",
+    "PT URL": "https://ksmart.lsgkerala.gov.in/",
+    "Trade Licence / Municipality Name": "K-SMART (Centralized ULBs)",
+    "Trade Licence URL": "https://ksmart.lsgkerala.gov.in/"
+  },
+  {
+    "State / Union Territory": "Ladakh (UT)",
+    "Shops & Establishments Portal Name": "Ladakh Labour Dept",
+    "S&E URL": "https://ladakh.nic.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "MC Leh",
+    "Trade Licence URL": "https://mcleh.in/"
+  },
+  {
+    "State / Union Territory": "Lakshadweep (UT)",
+    "Shops & Establishments Portal Name": "Lakshadweep Admin",
+    "S&E URL": "https://lakshadweep.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "Lakshadweep Panchayat",
+    "Trade Licence URL": "https://lakshadweep.gov.in/"
+  },
+  {
+    "State / Union Territory": "Madhya Pradesh",
+    "Shops & Establishments Portal Name": "MP Shram Sewa",
+    "S&E URL": "https://labour.mp.gov.in/",
+    "Professional Tax Portal Name": "MP Commercial Tax",
+    "PT URL": "https://mptax.mp.gov.in/",
+    "Trade Licence / Municipality Name": "MP e-Nagarpalika",
+    "Trade Licence URL": "https://www.mpenagarpalika.gov.in/"
+  },
+  {
+    "State / Union Territory": "Maharashtra",
+    "Shops & Establishments Portal Name": "Aaple Sarkar / Kamgar",
+    "S&E URL": "https://aaplesarkar.mahaonline.gov.in/",
+    "Professional Tax Portal Name": "MahaGST",
+    "PT URL": "https://www.mahagst.gov.in/",
+    "Trade Licence / Municipality Name": "BMC (Mumbai)",
+    "Trade Licence URL": "https://portal.mcgm.gov.in/"
+  },
+  {
+    "State / Union Territory": "Manipur",
+    "Shops & Establishments Portal Name": "Manipur Labour Dept",
+    "S&E URL": "https://manipur.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "IMC (Imphal)",
+    "Trade Licence URL": "https://imc.mn.gov.in/"
+  },
+  {
+    "State / Union Territory": "Meghalaya",
+    "Shops & Establishments Portal Name": "Meghalaya Labour",
+    "S&E URL": "https://meglabour.gov.in/",
+    "Professional Tax Portal Name": "Meghalaya Taxes",
+    "PT URL": "https://megtaxes.gov.in/",
+    "Trade Licence / Municipality Name": "SMB (Shillong)",
+    "Trade Licence URL": "https://smb.gov.in/"
+  },
+  {
+    "State / Union Territory": "Mizoram",
+    "Shops & Establishments Portal Name": "Mizoram Labour Dept",
+    "S&E URL": "https://lesde.mizoram.gov.in/",
+    "Professional Tax Portal Name": "Mizoram Taxes",
+    "PT URL": "https://mizoramtaxes.gov.in/",
+    "Trade Licence / Municipality Name": "AMC (Aizawl)",
+    "Trade Licence URL": "https://amcmizoram.com/"
+  },
+  {
+    "State / Union Territory": "Nagaland",
+    "Shops & Establishments Portal Name": "Nagaland Labour Dept",
+    "S&E URL": "https://labour.nagaland.gov.in/",
+    "Professional Tax Portal Name": "Nagaland Taxes",
+    "PT URL": "https://www.nagalandtax.nic.in/",
+    "Trade Licence / Municipality Name": "KMC (Kohima)",
+    "Trade Licence URL": "https://kmckohima.com/"
+  },
+  {
+    "State / Union Territory": "Odisha",
+    "Shops & Establishments Portal Name": "Odisha Labour (e-Shramik)",
+    "S&E URL": "https://labour.odisha.gov.in/",
+    "Professional Tax Portal Name": "Odisha Commercial Taxes",
+    "PT URL": "https://odishatax.gov.in/",
+    "Trade Licence / Municipality Name": "SUJOG Odisha (Centralized)",
+    "Trade Licence URL": "https://sujog.odisha.gov.in/"
+  },
+  {
+    "State / Union Territory": "Puducherry (UT)",
+    "Shops & Establishments Portal Name": "Puducherry Labour Dept",
+    "S&E URL": "https://labour.py.gov.in/",
+    "Professional Tax Portal Name": "Puducherry Municipality",
+    "PT URL": "https://municipality.py.gov.in/",
+    "Trade Licence / Municipality Name": "Puducherry Municipality",
+    "Trade Licence URL": "https://municipality.py.gov.in/"
+  },
+  {
+    "State / Union Territory": "Punjab",
+    "Shops & Establishments Portal Name": "e-Labour Punjab",
+    "S&E URL": "https://pblabour.gov.in/",
+    "Professional Tax Portal Name": "Punjab State Development Tax",
+    "PT URL": "https://psdt.punjab.gov.in/",
+    "Trade Licence / Municipality Name": "Punjab mSeva (Centralized)",
+    "Trade Licence URL": "https://mseva.lgpunjab.gov.in/"
+  },
+  {
+    "State / Union Territory": "Rajasthan",
+    "Shops & Establishments Portal Name": "RajKaaj / Labour",
+    "S&E URL": "https://labour.rajasthan.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "Urban Rajasthan (Centralized)",
+    "Trade Licence URL": "https://urban.rajasthan.gov.in/"
+  },
+  {
+    "State / Union Territory": "Sikkim",
+    "Shops & Establishments Portal Name": "Sikkim Labour Dept",
+    "S&E URL": "https://sikkimlabour.gov.in/",
+    "Professional Tax Portal Name": "Sikkim Commercial Taxes",
+    "PT URL": "https://sikkimtax.gov.in/",
+    "Trade Licence / Municipality Name": "GMC (Gangtok)",
+    "Trade Licence URL": "https://gangtokmc.org/"
+  },
+  {
+    "State / Union Territory": "Tamil Nadu",
+    "Shops & Establishments Portal Name": "TN Labour Portal",
+    "S&E URL": "https://labour.tn.gov.in/",
+    "Professional Tax Portal Name": "CTD Tamil Nadu",
+    "PT URL": "https://ctd.tn.gov.in/",
+    "Trade Licence / Municipality Name": "GCC (Chennai)",
+    "Trade Licence URL": "https://chennaicorporation.gov.in/"
+  },
+  {
+    "State / Union Territory": "Telangana",
+    "Shops & Establishments Portal Name": "TS Labour Dept",
+    "S&E URL": "https://labour.telangana.gov.in/",
+    "Professional Tax Portal Name": "TGCT (Commercial Taxes)",
+    "PT URL": "https://www.tgct.gov.in/",
+    "Trade Licence / Municipality Name": "GHMC (Hyderabad)",
+    "Trade Licence URL": "https://www.ghmc.gov.in/"
+  },
+  {
+    "State / Union Territory": "Tripura",
+    "Shops & Establishments Portal Name": "Tripura Labour Dept",
+    "S&E URL": "https://labour.tripura.gov.in/",
+    "Professional Tax Portal Name": "Tripura Taxes",
+    "PT URL": "https://tripurataxes.nic.in/",
+    "Trade Licence / Municipality Name": "AMC (Agartala)",
+    "Trade Licence URL": "https://agartalacity.tripura.gov.in/"
+  },
+  {
+    "State / Union Territory": "Uttar Pradesh",
+    "Shops & Establishments Portal Name": "UP Labour (Nivesh Mitra)",
+    "S&E URL": "https://niveshmitra.up.nic.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "e-NagarSewa UP (Centralized)",
+    "Trade Licence URL": "https://e-nagarsewaup.gov.in/"
+  },
+  {
+    "State / Union Territory": "Uttarakhand",
+    "Shops & Establishments Portal Name": "Uttarakhand Labour Dept",
+    "S&E URL": "https://labour.uk.gov.in/",
+    "Professional Tax Portal Name": "Not Applicable",
+    "PT URL": "",
+    "Trade Licence / Municipality Name": "e-NagarSewa UK (Centralized)",
+    "Trade Licence URL": "https://enagarsewa.uk.gov.in/"
+  },
+  {
+    "State / Union Territory": "West Bengal",
+    "Shops & Establishments Portal Name": "WB e-District",
+    "S&E URL": "https://edistrict.wb.gov.in/",
+    "Professional Tax Portal Name": "WB Commercial Taxes",
+    "PT URL": "https://wbcomtax.gov.in/",
+    "Trade Licence / Municipality Name": "KMC (Kolkata)",
+    "Trade Licence URL": "https://www.kmcgov.in/"
+  }
+]

@@ -116,3 +116,16 @@ def test_trade_license_for_online_only_is_more_info():
     results, _ = evaluate_registrations(profile)
     trade = next(item for item in results if item.name == "Trade Licence")
     assert trade.status == "More Info Required"
+
+
+def test_state_portal_routing_for_maharashtra_links():
+    profile = _make_profile("Professional Services", 8, "offline", "20-40 Lakhs")
+    results, _ = evaluate_registrations(profile)
+
+    shops = next(item for item in results if item.name == "Shops and Establishments Registration")
+    pt = next(item for item in results if item.name == "Professional Tax Registration")
+    trade = next(item for item in results if item.name == "Trade Licence")
+
+    assert shops.official_links[0] == "https://aaplesarkar.mahaonline.gov.in/"
+    assert pt.official_links[0] == "https://www.mahagst.gov.in/"
+    assert trade.official_links[0] == "https://portal.mcgm.gov.in/"
