@@ -7,6 +7,7 @@ from schemas import (
     ActionItem,
     BusinessProfile,
     BusinessSetupReport,
+    DataSourceLog,
 )
 
 app = FastAPI(title="AI Tool Evaluator API")
@@ -28,11 +29,45 @@ def build_business_setup_report(profile: BusinessProfile) -> BusinessSetupReport
         f"'{profile.turnover}', operations '{profile.operations}'."
     )
 
-    items = evaluate_registrations(profile)
+    items, kb_source_log = evaluate_registrations(profile)
 
     gst_verification = None
+    data_sources: list[DataSourceLog] = [kb_source_log]
+
     if profile.gstin:
         gst_verification = verify_gstin_with_setu(profile.gstin)
+        data_sources.append(
+            DataSourceLog(
+                source_type=gst_verification.get("source_type", "live_api"),
+                source_name="Setu GST Verification API",
+                status="used" if gst_verification.get("checked") else "fallback",
+                message=gst_verification.get("message", "GST verification attempted."),
+            )
+        )
+    else:
+        data_sources.append(
+            DataSourceLog(
+                source_type="input",
+                source_name="GST verification",
+                status="skipped",
+                message="GSTIN not provided by user; live GST verification skipped.",
+            )
+        )
+
+    pan_verification = {
+        "checked": False,
+        "provider": "setu",
+        "message": "PAN was not provided in input; live PAN verification skipped for MVP.",
+        "source_type": "input",
+    }
+    data_sources.append(
+        DataSourceLog(
+            source_type=pan_verification.get("source_type", "live_api"),
+            source_name="Setu PAN Verification API",
+            status="skipped",
+            message=pan_verification.get("message", "PAN verification attempted."),
+        )
+    )
 
     action_steps = [
         ActionItem(
@@ -64,6 +99,8 @@ def build_business_setup_report(profile: BusinessProfile) -> BusinessSetupReport
         ),
         suggested_sequence=action_steps,
         gst_verification=gst_verification,
+        pan_verification=pan_verification,
+        data_sources=data_sources,
         disclaimer=(
             "This output is guidance only and not legal advice. Always verify "
             "latest rules, fees, and procedures on official government sources "
