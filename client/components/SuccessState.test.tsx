@@ -42,6 +42,15 @@ describe("SuccessState", () => {
               message: "Used deterministic KB",
             },
           ],
+          action_results: [
+            {
+              name: "markdown_report",
+              status: "generated",
+              message: "Markdown generated",
+              artifact_filename: "report.md",
+              artifact_content: "# report",
+            },
+          ],
           disclaimer: "Guidance only",
         }}
       />,
@@ -51,5 +60,6 @@ describe("SuccessState", () => {
     expect(screen.getByText("GST Registration")).toBeInTheDocument();
     expect(screen.getByText("Applicable")).toBeInTheDocument();
     expect(screen.getByText("Guidance only")).toBeInTheDocument();
+    expect(screen.getByText("Generated outputs")).toBeInTheDocument();
   });
 });

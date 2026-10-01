@@ -17,14 +17,14 @@ class ApplicabilityStatus(str, Enum):
 class BusinessProfile(BaseModel):
     model_config = ConfigDict(populate_by_name=True, str_strip_whitespace=True)
 
-    business_type: str = Field(min_length=1, alias="businessType")
-    industry: str = Field(min_length=1)
-    state: str = Field(min_length=1)
-    city: str = Field(min_length=1)
+    business_type: str = Field(min_length=1, max_length=100, alias="businessType")
+    industry: str = Field(min_length=1, max_length=100)
+    state: str = Field(min_length=1, max_length=100)
+    city: str = Field(min_length=1, max_length=100)
     employees: int = Field(ge=0)
-    turnover: str = Field(min_length=1)
-    activity: str = Field(min_length=10)
-    operations: str = Field(min_length=1)
+    turnover: str = Field(min_length=1, max_length=50)
+    activity: str = Field(min_length=10, max_length=1000)
+    operations: str = Field(min_length=1, max_length=20)
     gstin: Optional[str] = None
     pan: Optional[str] = None
 
@@ -83,6 +83,15 @@ class DataSourceLog(BaseModel):
     message: str
 
 
+class ActionResult(BaseModel):
+    name: str
+    status: str
+    message: str
+    artifact_url: Optional[str] = None
+    artifact_content: Optional[str] = None
+    artifact_filename: Optional[str] = None
+
+
 class BusinessSetupReport(BaseModel):
     profile_summary: str
     potential_registrations: list[RegistrationAssessment]
@@ -91,4 +100,5 @@ class BusinessSetupReport(BaseModel):
     gst_verification: Optional[dict] = None
     pan_verification: Optional[dict] = None
     data_sources: list[DataSourceLog] = Field(default_factory=list)
+    action_results: list[ActionResult] = Field(default_factory=list)
     disclaimer: str
