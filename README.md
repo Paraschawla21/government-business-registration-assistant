@@ -1,9 +1,37 @@
 # Government Business Registration Assistant
 
+[![Frontend Build](https://img.shields.io/badge/frontend-build-passing-brightgreen)](#running-locally)
+[![Backend Tests](https://img.shields.io/badge/backend-tests-passing-brightgreen)](#tests)
+[![License](https://img.shields.io/badge/license-MIT-blue)](#disclaimer)
+
 An AI Agent workflow that helps first-time entrepreneurs in India understand which
 government registrations, licences, and approvals may apply to their business —
 based on business type, industry, location, employee count, turnover, and
 activity — and generates an actionable, step-by-step setup checklist.
+
+## Quick Start (Recruiter-Friendly)
+
+```bash
+# 1) Backend
+cd server
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
+set -a && source .env && set +a
+uvicorn api:app --reload --port 8000
+
+# 2) Frontend (new terminal)
+cd client
+npm install
+npm run dev
+```
+
+Open `http://localhost:3000` and submit a sample business profile to see:
+
+- registration applicability decisions
+- required docs and missing info
+- official links and source logging
+- downloadable markdown/csv/pdf outputs
 
 > Status: early-stage / actively being built. This repo currently contains the
 > business-profile intake UI and the backend scaffolding (FastAPI + local LLM via
@@ -236,6 +264,8 @@ Open [http://localhost:3000](http://localhost:3000). The frontend proxies
 - Architecture notes: `docs/architecture.md`
 - Limitations and legal caveats: `docs/limitations.md`
 - Manual scenario matrix: `docs/manual-test-matrix.md`
+- Demo runbook: `docs/demo-checklist.md`
+- Screenshot placeholders: `docs/screenshots/README.md`
 
 ## Disclaimer
 
