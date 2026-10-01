@@ -95,6 +95,10 @@ Each entry includes:
 - required documents
 - notes and verification notes
 
+Input now supports optional PAN and optional GSTIN; when provided, the backend
+attempts live verification via configured Setu endpoints and logs whether a
+live API source or fallback path was used.
+
 The backend rule engine (`server/registrations.py`) evaluates the business
 profile deterministically against this catalog and returns stable JSON output
 for identical inputs.

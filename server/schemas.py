@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 GSTIN_PATTERN = r"^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+PAN_PATTERN = r"^[A-Z]{5}[0-9]{4}[A-Z]{1}$"
 
 
 class ApplicabilityStatus(str, Enum):
@@ -25,6 +26,7 @@ class BusinessProfile(BaseModel):
     activity: str = Field(min_length=10)
     operations: str = Field(min_length=1)
     gstin: Optional[str] = None
+    pan: Optional[str] = None
 
     @field_validator("gstin")
     @classmethod
@@ -38,6 +40,20 @@ class BusinessProfile(BaseModel):
 
         if not re.fullmatch(GSTIN_PATTERN, value):
             raise ValueError("Invalid GSTIN format")
+        return value
+
+    @field_validator("pan")
+    @classmethod
+    def validate_pan(cls, value: Optional[str]) -> Optional[str]:
+        if value is None:
+            return None
+        value = value.strip().upper()
+        if not value:
+            return None
+        import re
+
+        if not re.fullmatch(PAN_PATTERN, value):
+            raise ValueError("Invalid PAN format")
         return value
 
 
@@ -74,5 +90,5 @@ class BusinessSetupReport(BaseModel):
     suggested_sequence: list[ActionItem]
     gst_verification: Optional[dict] = None
     pan_verification: Optional[dict] = None
-    data_sources: list[DataSourceLog] = []
+    data_sources: list[DataSourceLog] = Field(default_factory=list)
     disclaimer: str

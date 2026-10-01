@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from gov_apis import verify_gstin_with_setu
+from gov_apis import verify_gstin_with_setu, verify_pan_with_setu
 from registrations import evaluate_registrations
 from schemas import (
     ActionItem,
@@ -54,20 +54,31 @@ def build_business_setup_report(profile: BusinessProfile) -> BusinessSetupReport
             )
         )
 
-    pan_verification = {
-        "checked": False,
-        "provider": "setu",
-        "message": "PAN was not provided in input; live PAN verification skipped for MVP.",
-        "source_type": "input",
-    }
-    data_sources.append(
-        DataSourceLog(
-            source_type=pan_verification.get("source_type", "live_api"),
-            source_name="Setu PAN Verification API",
-            status="skipped",
-            message=pan_verification.get("message", "PAN verification attempted."),
+    if profile.pan:
+        pan_verification = verify_pan_with_setu(profile.pan)
+        data_sources.append(
+            DataSourceLog(
+                source_type=pan_verification.get("source_type", "live_api"),
+                source_name="Setu PAN Verification API",
+                status="used" if pan_verification.get("checked") else "fallback",
+                message=pan_verification.get("message", "PAN verification attempted."),
+            )
         )
-    )
+    else:
+        pan_verification = {
+            "checked": False,
+            "provider": "setu",
+            "message": "PAN was not provided in input; live PAN verification skipped.",
+            "source_type": "input",
+        }
+        data_sources.append(
+            DataSourceLog(
+                source_type="input",
+                source_name="PAN verification",
+                status="skipped",
+                message="PAN not provided by user; live PAN verification skipped.",
+            )
+        )
 
     action_steps = [
         ActionItem(

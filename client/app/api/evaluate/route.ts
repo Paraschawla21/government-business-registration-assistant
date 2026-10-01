@@ -15,6 +15,7 @@ export async function POST(request: Request) {
       activity?: unknown;
       operations?: unknown;
       gstin?: unknown;
+      pan?: unknown;
     };
 
     if (typeof body.businessType !== "string" || !body.businessType.trim()) {
@@ -77,6 +78,10 @@ export async function POST(request: Request) {
         gstin:
           typeof body.gstin === "string" && body.gstin.trim()
             ? body.gstin.trim().toUpperCase()
+            : null,
+        pan:
+          typeof body.pan === "string" && body.pan.trim()
+            ? body.pan.trim().toUpperCase()
             : null,
       }),
       cache: "no-store",

@@ -29,6 +29,19 @@ describe("SuccessState", () => {
               detail: "Add turnover details",
             },
           ],
+          pan_verification: {
+            checked: false,
+            provider: "setu",
+            message: "PAN not provided",
+          },
+          data_sources: [
+            {
+              source_type: "knowledge_base",
+              source_name: "server/data/registrations.json",
+              status: "used",
+              message: "Used deterministic KB",
+            },
+          ],
           disclaimer: "Guidance only",
         }}
       />,
