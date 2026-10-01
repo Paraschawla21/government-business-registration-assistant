@@ -142,7 +142,7 @@ export function SuccessState({
                         onClick={() =>
                           downloadTextArtifact(result.artifact_filename!, result.artifact_content!)
                         }
-                        className="mt-2 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+                        className="mt-2 cursor-pointer rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
                       >
                         Download {result.artifact_filename}
                       </button>
@@ -153,7 +153,7 @@ export function SuccessState({
                         onClick={() =>
                           downloadPdfArtifact(result.artifact_filename!, result.artifact_base64!)
                         }
-                        className="mt-2 ml-2 rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
+                        className="mt-2 ml-2 cursor-pointer rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
                       >
                         Download {result.artifact_filename}
                       </button>
@@ -206,7 +206,7 @@ export function SuccessState({
       )}
       <button
         onClick={onReset}
-        className="mt-8 rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
+        className="mt-8 cursor-pointer rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
       >
         Submit another business profile
       </button>
