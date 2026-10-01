@@ -16,3 +16,36 @@ Recommended file names:
 Tip:
 - Keep screenshots at consistent resolution.
 - Blur any sensitive identifiers before committing.
+
+## Capture guide (quick)
+
+1. Run app locally and keep browser zoom at 100%.
+2. Use the same browser window size for all captures.
+3. Capture full-page where possible for consistency.
+4. Save using the exact file names above.
+5. Re-run README and ensure image links render on GitHub.
+
+## Recommended command snippets for capture session
+
+Backend:
+
+```bash
+cd server
+source env/bin/activate
+set -a && source .env && set +a
+uvicorn api:app --reload --port 8000
+```
+
+Frontend:
+
+```bash
+cd client
+npm run dev
+```
+
+Optional (mock mode for deterministic screenshots):
+
+```env
+VERIFICATION_MODE=mock
+AGENT_ENABLE_LLM=false
+```
