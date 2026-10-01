@@ -120,6 +120,9 @@ artifacts in the final response:
 
 - Markdown report (`business_setup_report.md`)
 - CSV checklist tracker (`business_setup_tracker.csv`)
+- PDF report (`business_setup_report.pdf`, base64 payload)
+- Google Sheet append (when configured)
+- SMTP email delivery (when configured)
 
 The frontend exposes download buttons for these generated artifacts.
 
@@ -152,6 +155,14 @@ export SETU_PAN_VERIFY_URL="https://api.setu.co/data/pan/{pan}"
 export AGENT_ENABLE_LLM="false"
 export OLLAMA_MODEL="qwen2.5-coder:7b"
 export MAX_REQUEST_BYTES="65536"
+export GOOGLE_SHEETS_ID="your_google_sheet_id"
+export GOOGLE_SHEETS_API_KEY="your_google_api_key"
+export SMTP_HOST="smtp.gmail.com"
+export SMTP_PORT="587"
+export SMTP_USERNAME="your_email"
+export SMTP_PASSWORD="your_app_password"
+export REPORT_FROM_EMAIL="your_email"
+export REPORT_TO_EMAIL="recipient_email"
 ```
 
 If these variables are not set, the app still runs and returns deterministic

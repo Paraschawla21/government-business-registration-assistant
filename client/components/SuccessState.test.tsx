@@ -50,6 +50,19 @@ describe("SuccessState", () => {
               artifact_filename: "report.md",
               artifact_content: "# report",
             },
+            {
+              name: "pdf_report",
+              status: "generated",
+              message: "PDF generated",
+              artifact_filename: "report.pdf",
+              artifact_base64: "UERG",
+            },
+            {
+              name: "google_sheet_tracker",
+              status: "generated",
+              message: "Sheet updated",
+              artifact_url: "https://docs.google.com/spreadsheets/d/123",
+            },
           ],
           disclaimer: "Guidance only",
         }}

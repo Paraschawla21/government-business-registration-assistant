@@ -6,6 +6,8 @@ from schemas import (
     RegistrationAssessment,
 )
 
+from actions import generate_pdf_report
+
 
 def _sample_report() -> BusinessSetupReport:
     return BusinessSetupReport(
@@ -46,3 +48,10 @@ def test_csv_action_generates_text_artifact():
     assert artifact.artifact_filename == "business_setup_tracker.csv"
     assert artifact.artifact_content is not None
     assert "Registration,Status,Why Relevant" in artifact.artifact_content
+
+
+def test_pdf_action_generates_base64_artifact():
+    artifact = generate_pdf_report(_sample_report())
+    assert artifact.status == "generated"
+    assert artifact.artifact_filename == "business_setup_report.pdf"
+    assert artifact.artifact_base64 is not None

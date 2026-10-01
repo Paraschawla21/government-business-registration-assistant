@@ -119,7 +119,9 @@ export type BusinessSetupReport = {
     status: string;
     message: string;
     artifact_url?: string | null;
+    artifact_mime_type?: string | null;
     artifact_content?: string | null;
+    artifact_base64?: string | null;
     artifact_filename?: string | null;
   }[];
   disclaimer: string;
