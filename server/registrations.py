@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from schemas import ApplicabilityStatus, BusinessProfile, DataSourceLog, RegistrationAssessment
 
@@ -62,10 +62,12 @@ def _build_assessment(
     status: ApplicabilityStatus,
     reason: str,
     missing_info: list[str],
+    routing_note: Optional[str] = None,
 ) -> RegistrationAssessment:
     return RegistrationAssessment(
         name=entry["name"],
         issuing_authority=entry.get("issuing_authority"),
+        portal_routing_note=routing_note,
         status=status,
         why_relevant=reason,
         required_documents=entry.get("required_documents", []),
@@ -81,6 +83,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
     catalog = _load_catalog()
     state_portals = _load_state_portal_map()
     resolved_portals = _resolve_state_portals(profile.state, state_portals)
+    state_label = profile.state.strip()
     results: list[RegistrationAssessment] = []
 
     for entry in catalog:
@@ -134,10 +137,13 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
 
         if "operations_applicable" in conditions:
             official_links = [entry.get("official_url", "")]
+            routing_note = None
             if name == "Shops and Establishments Registration" and resolved_portals.get("sne_url"):
                 official_links = [resolved_portals["sne_url"]]
+                routing_note = f"Routed via state portal: {state_label}"
             if name == "Trade Licence" and resolved_portals.get("trade_url"):
                 official_links = [resolved_portals["trade_url"]]
+                routing_note = f"Routed via state portal: {state_label}"
 
             if profile.operations in conditions.get("operations_applicable", []):
                 results.append(
@@ -146,6 +152,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         ApplicabilityStatus.APPLICABLE,
                         "Operational mode indicates this registration is likely relevant.",
                         conditions.get("requires_additional_info", []),
+                        routing_note=routing_note,
                     )
                 )
                 results[-1].official_links = official_links
@@ -156,6 +163,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         ApplicabilityStatus.NOT_RELEVANT,
                         "Current operational mode does not strongly indicate applicability.",
                         [],
+                        routing_note=routing_note,
                     )
                 )
                 results[-1].official_links = official_links
@@ -166,6 +174,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         ApplicabilityStatus.MORE_INFO_REQUIRED,
                         "Unable to determine applicability from operations alone.",
                         conditions.get("requires_additional_info", []),
+                        routing_note=routing_note,
                     )
                 )
                 results[-1].official_links = official_links
@@ -216,8 +225,10 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
 
         if conditions.get("state_specific"):
             official_links = [entry.get("official_url", "")]
+            routing_note = None
             if name == "Professional Tax Registration" and resolved_portals.get("pt_url"):
                 official_links = [resolved_portals["pt_url"]]
+                routing_note = f"Routed via state portal: {state_label}"
 
             if profile.state in conditions.get("states_likely_applicable", []):
                 results.append(
@@ -226,6 +237,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         ApplicabilityStatus.APPLICABLE,
                         "State appears to have this registration category; verify exact state process.",
                         conditions.get("requires_additional_info", []),
+                        routing_note=routing_note,
                     )
                 )
                 results[-1].official_links = official_links
@@ -236,6 +248,7 @@ def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationA
                         ApplicabilityStatus.MORE_INFO_REQUIRED,
                         "State-specific applicability is uncertain for this location.",
                         conditions.get("requires_additional_info", []),
+                        routing_note=routing_note,
                     )
                 )
                 results[-1].official_links = official_links

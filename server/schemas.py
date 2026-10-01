@@ -60,6 +60,7 @@ class BusinessProfile(BaseModel):
 class RegistrationAssessment(BaseModel):
     name: str
     issuing_authority: Optional[str] = None
+    portal_routing_note: Optional[str] = None
     status: ApplicabilityStatus
     why_relevant: str
     required_documents: list[str]

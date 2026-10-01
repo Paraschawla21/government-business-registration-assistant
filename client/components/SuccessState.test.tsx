@@ -13,6 +13,7 @@ describe("SuccessState", () => {
           potential_registrations: [
             {
               name: "GST Registration",
+              portal_routing_note: null,
               status: "Applicable",
               why_relevant: "Reason",
               required_documents: ["PAN"],
