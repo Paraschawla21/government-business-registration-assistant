@@ -99,6 +99,20 @@ Input now supports optional PAN and optional GSTIN; when provided, the backend
 attempts live verification via configured Setu endpoints and logs whether a
 live API source or fallback path was used.
 
+## AI agent orchestration
+
+The API now uses an orchestration layer (`server/agent.py`) with this flow:
+
+1. Parse and validate profile (Pydantic schema)
+2. Run deterministic rule engine against verified registration KB
+3. Call live verification tools where input is available (GST/PAN via Setu)
+4. Optionally run constrained LLM reasoning for summary and action sequencing
+   (`AGENT_ENABLE_LLM=true`)
+5. Return final `BusinessSetupReport` schema
+
+LLM behavior is constrained to wording/prioritization only and must not
+introduce registrations/documents outside tool outputs.
+
 The backend rule engine (`server/registrations.py`) evaluates the business
 profile deterministically against this catalog and returns stable JSON output
 for identical inputs.
