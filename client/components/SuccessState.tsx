@@ -1,5 +1,15 @@
 import type { BusinessSetupReport } from "@/lib/business";
 
+function downloadTextArtifact(filename: string, content: string) {
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export function SuccessState({
   onReset,
   report,
@@ -100,6 +110,31 @@ export function SuccessState({
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+
+          {report.action_results && report.action_results.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-slate-700">Generated outputs</p>
+              <div className="mt-2 space-y-2">
+                {report.action_results.map((result) => (
+                  <div key={result.name} className="rounded-md border border-slate-200 px-3 py-2">
+                    <p className="text-sm font-semibold text-slate-800">{result.name}</p>
+                    <p className="text-xs text-slate-600">{result.message}</p>
+                    {result.artifact_content && result.artifact_filename && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          downloadTextArtifact(result.artifact_filename!, result.artifact_content!)
+                        }
+                        className="mt-2 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+                      >
+                        Download {result.artifact_filename}
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

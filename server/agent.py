@@ -4,6 +4,7 @@ from typing import Any
 import ollama
 from pydantic import BaseModel, Field
 
+from actions import run_actions
 from gov_apis import verify_gstin_with_setu, verify_pan_with_setu
 from registrations import evaluate_registrations
 from schemas import (
@@ -234,7 +235,7 @@ def run_business_setup_agent(profile: BusinessProfile) -> BusinessSetupReport:
             data_sources=data_sources,
         )
 
-        return BusinessSetupReport(
+        report = BusinessSetupReport(
             profile_summary=profile_summary,
             potential_registrations=items,
             information_still_required=sorted(
@@ -254,5 +255,7 @@ def run_business_setup_agent(profile: BusinessProfile) -> BusinessSetupReport:
                 "before filing."
             ),
         )
+        report.action_results = run_actions(report)
+        return report
     except Exception as exc:
         return _fallback_report(profile, f"Agent fallback due to error: {type(exc).__name__}")

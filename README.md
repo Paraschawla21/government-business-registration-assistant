@@ -113,6 +113,16 @@ The API now uses an orchestration layer (`server/agent.py`) with this flow:
 LLM behavior is constrained to wording/prioritization only and must not
 introduce registrations/documents outside tool outputs.
 
+## Action layer (MVP)
+
+The orchestrator now runs an in-memory action layer and returns generated
+artifacts in the final response:
+
+- Markdown report (`business_setup_report.md`)
+- CSV checklist tracker (`business_setup_tracker.csv`)
+
+The frontend exposes download buttons for these generated artifacts.
+
 The backend rule engine (`server/registrations.py`) evaluates the business
 profile deterministically against this catalog and returns stable JSON output
 for identical inputs.
@@ -139,6 +149,9 @@ Optional live GST verification setup (Setu):
 export SETU_GST_VERIFY_URL="https://api.setu.co/data/gst/{gstin}"
 export SETU_BEARER_TOKEN="your_setu_bearer_token"
 export SETU_PAN_VERIFY_URL="https://api.setu.co/data/pan/{pan}"
+export AGENT_ENABLE_LLM="false"
+export OLLAMA_MODEL="qwen2.5-coder:7b"
+export MAX_REQUEST_BYTES="65536"
 ```
 
 If these variables are not set, the app still runs and returns deterministic
