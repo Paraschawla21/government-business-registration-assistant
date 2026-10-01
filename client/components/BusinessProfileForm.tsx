@@ -3,6 +3,7 @@ import { SparkleIcon, Spinner } from "@/components/Icons";
 import type { FormEvent } from "react";
 import {
   BUSINESS_TYPES,
+  INDIAN_STATES_UTS,
   INDUSTRIES,
   OPERATIONS_OPTIONS,
   TURNOVER_BRACKETS,
@@ -68,13 +69,18 @@ export function BusinessProfileForm({
         </Field>
 
         <Field label="State" required error={errors.state}>
-          <input
-            type="text"
-            placeholder="e.g. Maharashtra"
+          <select
             value={form.state}
             onChange={(e) => onFieldChange("state", e.target.value)}
-            className={inputClasses(!!errors.state)}
-          />
+            className={selectClasses(!!errors.state)}
+          >
+            <option value="">Select state/UT</option>
+            {INDIAN_STATES_UTS.map((state) => (
+              <option key={state} value={state}>
+                {state}
+              </option>
+            ))}
+          </select>
         </Field>
 
         <Field label="City" required error={errors.city}>
@@ -197,7 +203,7 @@ export function BusinessProfileForm({
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/30 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
+        className="mt-8 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/30 transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400"
       >
         {status === "submitting" ? (
           <>
