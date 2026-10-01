@@ -24,5 +24,7 @@ def test_evaluate_endpoint_returns_report_shape():
     assert "profile_summary" in body
     assert "potential_registrations" in body
     assert "suggested_sequence" in body
+    assert "data_sources" in body
     assert "disclaimer" in body
     assert isinstance(body["potential_registrations"], list)
+    assert isinstance(body["data_sources"], list)

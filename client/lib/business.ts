@@ -96,6 +96,20 @@ export type BusinessSetupReport = {
     status?: string | null;
     message?: string;
   } | null;
+  pan_verification?: {
+    checked?: boolean;
+    provider?: string;
+    pan?: string;
+    name?: string | null;
+    status?: string | null;
+    message?: string;
+  } | null;
+  data_sources?: {
+    source_type: string;
+    source_name: string;
+    status: string;
+    message: string;
+  }[];
   disclaimer: string;
 };
 

@@ -81,6 +81,28 @@ export function SuccessState({
             </div>
           )}
 
+          {report.pan_verification && (
+            <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50 px-3 py-3 text-sm text-indigo-900">
+              <p className="font-semibold">PAN Verification</p>
+              <p className="mt-1 text-xs text-indigo-800">
+                {report.pan_verification.message ?? "No PAN verification message."}
+              </p>
+            </div>
+          )}
+
+          {report.data_sources && report.data_sources.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-semibold text-slate-700">Data sources used</p>
+              <ul className="mt-2 space-y-1 text-xs text-slate-600">
+                {report.data_sources.map((source) => (
+                  <li key={`${source.source_name}-${source.status}`}>
+                    <span className="font-semibold">{source.source_name}</span>: {source.status} - {source.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {report.suggested_sequence.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-semibold text-slate-700">Suggested sequence</p>

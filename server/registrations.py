@@ -1,280 +1,235 @@
-from dataclasses import dataclass
+import json
+from pathlib import Path
+from typing import Any
 
-from schemas import ApplicabilityStatus, BusinessProfile, RegistrationAssessment
-
-
-@dataclass(frozen=True)
-class RegistrationRule:
-    name: str
-    required_documents: list[str]
-    official_links: list[str]
-    verification_notes: list[str]
+from schemas import ApplicabilityStatus, BusinessProfile, DataSourceLog, RegistrationAssessment
 
 
-REGISTRATION_CATALOG: list[RegistrationRule] = [
-    RegistrationRule(
-        name="PAN and TAN",
-        required_documents=[
-            "Business constitution details",
-            "Identity and address proof of proprietor/partners/directors",
-            "Business address proof",
-        ],
-        official_links=["https://www.incometax.gov.in/iec/foportal/"],
-        verification_notes=[
-            "Verify latest PAN/TAN process and latest document checklist on the Income Tax portal.",
-        ],
-    ),
-    RegistrationRule(
-        name="GST Registration",
-        required_documents=[
-            "PAN of business/entity",
-            "Business address proof",
-            "Promoter/authorized signatory identity proof",
-            "Bank account details",
-        ],
-        official_links=["https://www.gst.gov.in/"],
-        verification_notes=[
-            "GST thresholds and compulsory registration categories should be verified from official GST guidance.",
-        ],
-    ),
-    RegistrationRule(
-        name="Udyam (MSME) Registration",
-        required_documents=[
-            "Aadhaar of proprietor/authorized signatory",
-            "PAN",
-            "Business activity details",
-        ],
-        official_links=["https://udyamregistration.gov.in/"],
-        verification_notes=[
-            "MSME classification should be checked against current investment and turnover criteria on Udyam portal.",
-        ],
-    ),
-    RegistrationRule(
-        name="Shops and Establishments Registration",
-        required_documents=[
-            "Business address proof",
-            "Identity proof of owner/authorized person",
-            "Employee details (if any)",
-        ],
-        official_links=["https://labour.gov.in/"],
-        verification_notes=[
-            "This is state-specific and often city-specific; verify exact process on the relevant state labour portal.",
-        ],
-    ),
-    RegistrationRule(
-        name="EPFO Registration",
-        required_documents=[
-            "PAN",
-            "Incorporation/constitution documents",
-            "Employee details",
-            "Bank details",
-        ],
-        official_links=["https://www.epfindia.gov.in/"],
-        verification_notes=[
-            "Applicability thresholds can change; verify current criteria on EPFO portal.",
-        ],
-    ),
-    RegistrationRule(
-        name="ESIC Registration",
-        required_documents=[
-            "PAN",
-            "Business registration proof",
-            "Employee details and wage information",
-            "Bank details",
-        ],
-        official_links=["https://www.esic.gov.in/"],
-        verification_notes=[
-            "Employee threshold and wage conditions must be verified on ESIC portal.",
-        ],
-    ),
-    RegistrationRule(
-        name="FSSAI Registration/Licence",
-        required_documents=[
-            "Business constitution proof",
-            "Premises details",
-            "Identity proof of applicant",
-            "Food category/activity details",
-        ],
-        official_links=["https://foscos.fssai.gov.in/"],
-        verification_notes=[
-            "Registration vs state/central licence category depends on scale/type; verify on FoSCoS.",
-        ],
-    ),
-]
+CATALOG_PATH = Path(__file__).resolve().parent / "data" / "registrations.json"
 
 
-def evaluate_registrations(profile: BusinessProfile) -> list[RegistrationAssessment]:
+def _load_catalog() -> list[dict[str, Any]]:
+    with CATALOG_PATH.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def _turnover_rank(turnover: str) -> int:
+    order = {
+        "Under 20 Lakhs": 0,
+        "20-40 Lakhs": 1,
+        "40 Lakhs - 1 Crore": 2,
+        "Above 1 Crore": 3,
+    }
+    return order.get(turnover, -1)
+
+
+def _has_any_keyword(text: str, keywords: list[str]) -> bool:
+    normalized = text.lower()
+    return any(keyword.lower() in normalized for keyword in keywords)
+
+
+def _build_assessment(
+    entry: dict[str, Any],
+    status: ApplicabilityStatus,
+    reason: str,
+    missing_info: list[str],
+) -> RegistrationAssessment:
+    return RegistrationAssessment(
+        name=entry["name"],
+        issuing_authority=entry.get("issuing_authority"),
+        status=status,
+        why_relevant=reason,
+        required_documents=entry.get("required_documents", []),
+        information_still_required=missing_info,
+        official_links=[entry.get("official_url", "")],
+        source_reference_url=entry.get("source_reference_url"),
+        source_reference_date=entry.get("source_reference_date"),
+        verification_notes=entry.get("verification_notes", []),
+    )
+
+
+def evaluate_registrations(profile: BusinessProfile) -> tuple[list[RegistrationAssessment], DataSourceLog]:
+    catalog = _load_catalog()
     results: list[RegistrationAssessment] = []
-    turnover = profile.turnover.lower()
-    industry = profile.industry.lower()
-    operations = profile.operations.lower()
 
-    for entry in REGISTRATION_CATALOG:
-        if entry.name == "PAN and TAN":
+    for entry in catalog:
+        conditions = entry.get("conditions", {})
+        name = entry.get("name", "Unknown")
+
+        if conditions.get("always_applicable"):
             results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=ApplicabilityStatus.APPLICABLE,
-                    why_relevant="PAN is foundational for tax identity and TAN may be required for TDS compliance.",
-                    required_documents=entry.required_documents,
-                    information_still_required=[],
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+                _build_assessment(
+                    entry,
+                    ApplicabilityStatus.APPLICABLE,
+                    "Foundational registration generally required for tax and compliance identity.",
+                    [],
                 )
             )
             continue
 
-        if entry.name == "GST Registration":
-            missing = [
-                "Exact annual turnover estimate in INR",
-                "Whether interstate taxable supplies are made",
-            ]
-            status = ApplicabilityStatus.MORE_INFO_REQUIRED
-            reason = "GST applicability depends on turnover threshold and nature/place of supply."
-            if turnover == "above 1 crore":
-                status = ApplicabilityStatus.APPLICABLE
-                missing = []
-                reason = "High expected turnover indicates GST registration is likely applicable."
-            elif operations in {"online", "both"} and turnover in {
-                "40 lakhs - 1 crore",
-                "above 1 crore",
-            }:
-                status = ApplicabilityStatus.APPLICABLE
-                missing = []
-                reason = "Online or mixed operations with higher turnover may trigger GST obligations."
+        if name == "GST Registration":
+            high_turnover = _turnover_rank(profile.turnover) >= 2
+            higher_risk_ops = profile.operations in conditions.get("operations_likely_applicable", [])
+            if high_turnover or higher_risk_ops:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        "Turnover and/or operations profile suggests GST registration may be applicable.",
+                        [],
+                    )
+                )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.MORE_INFO_REQUIRED,
+                        "GST applicability depends on turnover details and supply nature; more details are required.",
+                        conditions.get("requires_additional_info", []),
+                    )
+                )
+            continue
 
+        if conditions.get("always_more_info_required"):
             results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=status,
-                    why_relevant=reason,
-                    required_documents=entry.required_documents,
-                    information_still_required=missing,
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+                _build_assessment(
+                    entry,
+                    ApplicabilityStatus.MORE_INFO_REQUIRED,
+                    "More details are required to determine final applicability.",
+                    conditions.get("requires_additional_info", []),
                 )
             )
             continue
 
-        if entry.name == "Udyam (MSME) Registration":
-            results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=ApplicabilityStatus.MORE_INFO_REQUIRED,
-                    why_relevant="MSME registration may be beneficial, but classification depends on investment and turnover details.",
-                    required_documents=entry.required_documents,
-                    information_still_required=[
-                        "Plant/equipment investment details",
-                        "Final turnover estimate in INR",
-                    ],
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+        if "operations_applicable" in conditions:
+            if profile.operations in conditions.get("operations_applicable", []):
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        "Operational mode indicates this registration is likely relevant.",
+                        conditions.get("requires_additional_info", []),
+                    )
                 )
-            )
+            elif profile.operations in conditions.get("operations_not_relevant", []):
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.NOT_RELEVANT,
+                        "Current operational mode does not strongly indicate applicability.",
+                        [],
+                    )
+                )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.MORE_INFO_REQUIRED,
+                        "Unable to determine applicability from operations alone.",
+                        conditions.get("requires_additional_info", []),
+                    )
+                )
             continue
 
-        if entry.name == "Shops and Establishments Registration":
-            status = (
-                ApplicabilityStatus.APPLICABLE
-                if operations in {"offline", "both"}
-                else ApplicabilityStatus.NOT_RELEVANT
-            )
-            reason = (
-                "Physical establishment operations commonly require local Shops and Establishments registration."
-                if status == ApplicabilityStatus.APPLICABLE
-                else "Purely online setup may not need this, subject to state rules."
-            )
-            notes = list(entry.verification_notes)
-            results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=status,
-                    why_relevant=reason,
-                    required_documents=entry.required_documents,
-                    information_still_required=[]
-                    if status == ApplicabilityStatus.NOT_RELEVANT
-                    else ["Exact office/shop location and local municipal jurisdiction"],
-                    official_links=entry.official_links,
-                    verification_notes=notes,
+        if "employees_min_applicable" in conditions:
+            threshold = int(conditions["employees_min_applicable"])
+            if profile.employees >= threshold:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        f"Employee count meets or exceeds a commonly used threshold ({threshold}).",
+                        conditions.get("requires_additional_info", []),
+                    )
                 )
-            )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.NOT_RELEVANT,
+                        f"Employee count is currently below the commonly used threshold ({threshold}).",
+                        [],
+                    )
+                )
             continue
 
-        if entry.name == "EPFO Registration":
-            status = (
-                ApplicabilityStatus.APPLICABLE
-                if profile.employees >= 20
-                else ApplicabilityStatus.NOT_RELEVANT
-            )
-            reason = (
-                "Employee count is at/above commonly referenced EPFO threshold."
-                if status == ApplicabilityStatus.APPLICABLE
-                else "Current employee count is below commonly referenced EPFO threshold."
-            )
-            results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=status,
-                    why_relevant=reason,
-                    required_documents=entry.required_documents,
-                    information_still_required=[] if status == ApplicabilityStatus.NOT_RELEVANT else ["Employee joining dates and payroll setup details"],
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+        if "industry_keywords" in conditions:
+            if _has_any_keyword(profile.industry, conditions.get("industry_keywords", [])):
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        "Industry profile suggests this registration/licence may be required.",
+                        conditions.get("requires_additional_info", []),
+                    )
                 )
-            )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.NOT_RELEVANT,
+                        "Industry profile does not strongly indicate this registration.",
+                        [],
+                    )
+                )
             continue
 
-        if entry.name == "ESIC Registration":
-            status = (
-                ApplicabilityStatus.APPLICABLE
-                if profile.employees >= 10
-                else ApplicabilityStatus.NOT_RELEVANT
-            )
-            reason = (
-                "Employee count suggests ESIC applicability may arise."
-                if status == ApplicabilityStatus.APPLICABLE
-                else "Current employee count is below commonly referenced ESIC threshold."
-            )
-            missing_info = (
-                ["Employee wage details for ESIC wage-threshold check"]
-                if status == ApplicabilityStatus.APPLICABLE
-                else []
-            )
-            results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=status,
-                    why_relevant=reason,
-                    required_documents=entry.required_documents,
-                    information_still_required=missing_info,
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+        if conditions.get("state_specific"):
+            if profile.state in conditions.get("states_likely_applicable", []):
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        "State appears to have this registration category; verify exact state process.",
+                        conditions.get("requires_additional_info", []),
+                    )
                 )
-            )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.MORE_INFO_REQUIRED,
+                        "State-specific applicability is uncertain for this location.",
+                        conditions.get("requires_additional_info", []),
+                    )
+                )
             continue
 
-        if entry.name == "FSSAI Registration/Licence":
-            is_food = "food" in industry or "beverage" in industry
-            status = (
-                ApplicabilityStatus.APPLICABLE
-                if is_food
-                else ApplicabilityStatus.NOT_RELEVANT
-            )
-            reason = (
-                "Food and beverage activities usually require FSSAI registration or licence."
-                if is_food
-                else "No clear food handling/manufacturing activity indicated in profile."
-            )
-            results.append(
-                RegistrationAssessment(
-                    name=entry.name,
-                    status=status,
-                    why_relevant=reason,
-                    required_documents=entry.required_documents,
-                    information_still_required=[] if not is_food else ["Exact food activity category and scale of operations"],
-                    official_links=entry.official_links,
-                    verification_notes=entry.verification_notes,
+        if "activity_keywords" in conditions:
+            if _has_any_keyword(profile.activity, conditions.get("activity_keywords", [])):
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.APPLICABLE,
+                        "Business activity indicates this registration may be relevant.",
+                        conditions.get("requires_additional_info", []),
+                    )
                 )
-            )
+            else:
+                results.append(
+                    _build_assessment(
+                        entry,
+                        ApplicabilityStatus.MORE_INFO_REQUIRED,
+                        "International trade intent is not explicit from current activity description.",
+                        conditions.get("requires_additional_info", []),
+                    )
+                )
+            continue
 
-    return results
+        results.append(
+            _build_assessment(
+                entry,
+                ApplicabilityStatus.MORE_INFO_REQUIRED,
+                "Insufficient structured conditions; manual review required.",
+                conditions.get("requires_additional_info", []),
+            )
+        )
+
+    source_log = DataSourceLog(
+        source_type="knowledge_base",
+        source_name="server/data/registrations.json",
+        status="used",
+        message="Deterministic registration catalog was used for applicability evaluation.",
+    )
+
+    return results, source_log

@@ -1,0 +1,264 @@
+[
+  {
+    "id": "pan_tan",
+    "name": "PAN and TAN",
+    "issuing_authority": "Income Tax Department, Government of India",
+    "official_url": "https://www.incometax.gov.in/iec/foportal/",
+    "source_reference_url": "https://www.incometax.gov.in/iec/foportal/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "always_applicable": true
+    },
+    "required_documents": [
+      "Business constitution details",
+      "Identity and address proof of proprietor/partners/directors",
+      "Business address proof"
+    ],
+    "notes": [
+      "PAN is foundational for business tax identity.",
+      "TAN may be required when TDS compliance applies."
+    ],
+    "verification_notes": [
+      "Verify latest PAN/TAN process and document checklist on Income Tax portal."
+    ]
+  },
+  {
+    "id": "gst_registration",
+    "name": "GST Registration",
+    "issuing_authority": "Goods and Services Tax Network (GSTN)",
+    "official_url": "https://www.gst.gov.in/",
+    "source_reference_url": "https://www.gst.gov.in/help/quicklinks/registration",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "turnover_brackets_likely_applicable": ["40 Lakhs - 1 Crore", "Above 1 Crore"],
+      "operations_likely_applicable": ["online", "both"],
+      "requires_additional_info": [
+        "Exact annual turnover estimate in INR",
+        "Whether interstate taxable supplies are made"
+      ]
+    },
+    "required_documents": [
+      "PAN of business/entity",
+      "Business address proof",
+      "Promoter/authorized signatory identity proof",
+      "Bank account details"
+    ],
+    "notes": [
+      "Applicability depends on turnover, category, location, and compulsory registration conditions."
+    ],
+    "verification_notes": [
+      "GST thresholds and compulsory registration conditions must be verified from current official GST guidance."
+    ]
+  },
+  {
+    "id": "udyam_msme",
+    "name": "Udyam (MSME) Registration",
+    "issuing_authority": "Ministry of MSME, Government of India",
+    "official_url": "https://udyamregistration.gov.in/",
+    "source_reference_url": "https://udyamregistration.gov.in/UdyamRegistration.aspx",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "always_more_info_required": true,
+      "requires_additional_info": [
+        "Plant/equipment investment details",
+        "Final turnover estimate in INR"
+      ]
+    },
+    "required_documents": [
+      "Aadhaar of proprietor/authorized signatory",
+      "PAN",
+      "Business activity details"
+    ],
+    "notes": [
+      "MSME classification depends on investment and turnover criteria."
+    ],
+    "verification_notes": [
+      "Confirm current MSME classification criteria on Udyam portal before filing."
+    ]
+  },
+  {
+    "id": "shops_establishments",
+    "name": "Shops and Establishments Registration",
+    "issuing_authority": "State Labour Departments / Local Authorities",
+    "official_url": "https://labour.gov.in/",
+    "source_reference_url": "https://labour.gov.in/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "operations_applicable": ["offline", "both"],
+      "operations_not_relevant": ["online"],
+      "requires_additional_info": [
+        "Exact office/shop location and local municipal jurisdiction"
+      ]
+    },
+    "required_documents": [
+      "Business address proof",
+      "Identity proof of owner/authorized person",
+      "Employee details (if any)"
+    ],
+    "notes": [
+      "State and city-specific registration process varies."
+    ],
+    "verification_notes": [
+      "Verify exact state portal and local process before filing."
+    ]
+  },
+  {
+    "id": "epfo",
+    "name": "EPFO Registration",
+    "issuing_authority": "Employees' Provident Fund Organisation",
+    "official_url": "https://www.epfindia.gov.in/",
+    "source_reference_url": "https://www.epfindia.gov.in/site_en/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "employees_min_applicable": 20,
+      "employees_below_not_relevant": 20,
+      "requires_additional_info": [
+        "Employee joining dates and payroll setup details"
+      ]
+    },
+    "required_documents": [
+      "PAN",
+      "Incorporation/constitution documents",
+      "Employee details",
+      "Bank details"
+    ],
+    "notes": [
+      "Thresholds and special conditions can change over time."
+    ],
+    "verification_notes": [
+      "Verify current EPFO applicability criteria on official EPFO portal."
+    ]
+  },
+  {
+    "id": "esic",
+    "name": "ESIC Registration",
+    "issuing_authority": "Employees' State Insurance Corporation",
+    "official_url": "https://www.esic.gov.in/",
+    "source_reference_url": "https://www.esic.gov.in/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "employees_min_applicable": 10,
+      "employees_below_not_relevant": 10,
+      "requires_additional_info": [
+        "Employee wage details for ESIC wage-threshold check"
+      ]
+    },
+    "required_documents": [
+      "PAN",
+      "Business registration proof",
+      "Employee details and wage information",
+      "Bank details"
+    ],
+    "notes": [
+      "Wage limits and state-specific applicability may affect final obligation."
+    ],
+    "verification_notes": [
+      "Confirm current ESIC wage and employee criteria on official ESIC portal."
+    ]
+  },
+  {
+    "id": "fssai",
+    "name": "FSSAI Registration/Licence",
+    "issuing_authority": "Food Safety and Standards Authority of India",
+    "official_url": "https://foscos.fssai.gov.in/",
+    "source_reference_url": "https://foscos.fssai.gov.in/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "industry_keywords": ["food", "beverage"],
+      "requires_additional_info": [
+        "Exact food activity category and scale of operations"
+      ]
+    },
+    "required_documents": [
+      "Business constitution proof",
+      "Premises details",
+      "Identity proof of applicant",
+      "Food category/activity details"
+    ],
+    "notes": [
+      "Registration vs state/central licence depends on scale and business type."
+    ],
+    "verification_notes": [
+      "Verify final category and requirements on FoSCoS portal."
+    ]
+  },
+  {
+    "id": "professional_tax",
+    "name": "Professional Tax Registration",
+    "issuing_authority": "State Commercial Tax / Professional Tax Departments",
+    "official_url": "https://www.mahagst.gov.in/en/profession-tax",
+    "source_reference_url": "https://www.mahagst.gov.in/en/profession-tax",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "state_specific": true,
+      "states_likely_applicable": ["Maharashtra", "Karnataka", "West Bengal", "Tamil Nadu"],
+      "requires_additional_info": [
+        "State-specific employer/professional category"
+      ]
+    },
+    "required_documents": [
+      "Business constitution proof",
+      "PAN",
+      "Address proof",
+      "Employee/profession details"
+    ],
+    "notes": [
+      "Applicable only in specific states with Professional Tax provisions."
+    ],
+    "verification_notes": [
+      "Confirm applicability and rates on relevant state tax portal."
+    ]
+  },
+  {
+    "id": "trade_license",
+    "name": "Trade Licence",
+    "issuing_authority": "Municipal Corporation / Local Urban Body",
+    "official_url": "https://www.india.gov.in/topics/governance-administration/municipalities",
+    "source_reference_url": "https://www.india.gov.in/topics/governance-administration/municipalities",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "operations_applicable": ["offline", "both"],
+      "requires_additional_info": [
+        "Exact local body jurisdiction",
+        "Nature of premises usage"
+      ]
+    },
+    "required_documents": [
+      "Business address and premises proof",
+      "Identity proof of applicant",
+      "Business activity details"
+    ],
+    "notes": [
+      "Local body requirements differ significantly by city/municipality."
+    ],
+    "verification_notes": [
+      "Confirm requirements on local municipal portal before applying."
+    ]
+  },
+  {
+    "id": "iec",
+    "name": "Import Export Code (IEC)",
+    "issuing_authority": "Directorate General of Foreign Trade (DGFT)",
+    "official_url": "https://www.dgft.gov.in/CP/",
+    "source_reference_url": "https://www.dgft.gov.in/CP/",
+    "source_reference_date": "2026-10-01",
+    "conditions": {
+      "activity_keywords": ["import", "export", "international trade", "cross-border"],
+      "requires_additional_info": [
+        "Whether business performs import/export transactions"
+      ]
+    },
+    "required_documents": [
+      "PAN",
+      "Address proof",
+      "Bank details",
+      "Business constitution proof"
+    ],
+    "notes": [
+      "IEC is generally required for import/export of goods/services under applicable frameworks."
+    ],
+    "verification_notes": [
+      "Verify latest DGFT guidelines and exemptions before filing."
+    ]
+  }
+]

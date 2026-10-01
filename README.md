@@ -76,8 +76,28 @@ more information or manual verification is required, rather than guessing.
 
 ```
 client/   Next.js frontend — business profile intake form + results view
-server/   FastAPI backend — Ollama-backed evaluation endpoint
+server/   FastAPI backend — deterministic evaluator + optional live verification
 ```
+
+## Knowledge base and deterministic evaluation
+
+This project now uses a structured registration knowledge base at:
+
+- `server/data/registrations.json`
+
+Each entry includes:
+
+- registration name
+- issuing authority
+- official portal URL
+- source reference URL and source reference date
+- applicability conditions
+- required documents
+- notes and verification notes
+
+The backend rule engine (`server/registrations.py`) evaluates the business
+profile deterministically against this catalog and returns stable JSON output
+for identical inputs.
 
 ## Running locally
 
@@ -100,10 +120,11 @@ Optional live GST verification setup (Setu):
 ```bash
 export SETU_GST_VERIFY_URL="https://api.setu.co/data/gst/{gstin}"
 export SETU_BEARER_TOKEN="your_setu_bearer_token"
+export SETU_PAN_VERIFY_URL="https://api.setu.co/data/pan/{pan}"
 ```
 
 If these variables are not set, the app still runs and returns deterministic
-registration guidance; GST verification is simply marked as not configured.
+registration guidance; live verification is marked as not configured/skipped.
 
 ### Frontend
 

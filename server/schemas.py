@@ -43,11 +43,14 @@ class BusinessProfile(BaseModel):
 
 class RegistrationAssessment(BaseModel):
     name: str
+    issuing_authority: Optional[str] = None
     status: ApplicabilityStatus
     why_relevant: str
     required_documents: list[str]
     information_still_required: list[str]
     official_links: list[str]
+    source_reference_url: Optional[str] = None
+    source_reference_date: Optional[str] = None
     verification_notes: list[str]
 
 
@@ -57,10 +60,19 @@ class ActionItem(BaseModel):
     detail: str
 
 
+class DataSourceLog(BaseModel):
+    source_type: str
+    source_name: str
+    status: str
+    message: str
+
+
 class BusinessSetupReport(BaseModel):
     profile_summary: str
     potential_registrations: list[RegistrationAssessment]
     information_still_required: list[str]
     suggested_sequence: list[ActionItem]
     gst_verification: Optional[dict] = None
+    pan_verification: Optional[dict] = None
+    data_sources: list[DataSourceLog] = []
     disclaimer: str
