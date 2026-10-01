@@ -27,8 +27,26 @@ describe("validateForm", () => {
       activity: "Custom software product development",
       operations: "both",
       gstin: "27ABCDE1234F1Z5",
+      pan: "ABCDE1234F",
     });
 
     expect(Object.keys(errors)).toHaveLength(0);
+  });
+
+  it("validates PAN format when provided", () => {
+    const errors = validateForm({
+      ...INITIAL_STATE,
+      businessType: "Private Limited",
+      industry: "Information Technology",
+      state: "Maharashtra",
+      city: "Pune",
+      employees: "5",
+      turnover: "20-40 Lakhs",
+      activity: "Building software products",
+      operations: "online",
+      pan: "123INVALID",
+    });
+
+    expect(errors.pan).toBeTruthy();
   });
 });

@@ -35,6 +35,8 @@ export const OPERATIONS_OPTIONS = [
 export const GSTIN_PATTERN =
   /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 
+export const PAN_PATTERN = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
 export type FormState = {
   businessType: string;
   industry: string;
@@ -45,6 +47,7 @@ export type FormState = {
   activity: string;
   operations: string;
   gstin: string;
+  pan: string;
 };
 
 export const INITIAL_STATE: FormState = {
@@ -57,6 +60,7 @@ export const INITIAL_STATE: FormState = {
   activity: "",
   operations: "",
   gstin: "",
+  pan: "",
 };
 
 export type Status = "idle" | "submitting" | "success" | "error";
@@ -137,6 +141,9 @@ export function validateForm(form: FormState): FormErrors {
   }
   if (form.gstin.trim() && !GSTIN_PATTERN.test(form.gstin.trim())) {
     nextErrors.gstin = "Enter a valid 15-character GSTIN (e.g. 27ABCDE1234F1Z5).";
+  }
+  if (form.pan.trim() && !PAN_PATTERN.test(form.pan.trim().toUpperCase())) {
+    nextErrors.pan = "Enter a valid PAN (e.g. ABCDE1234F).";
   }
 
   return nextErrors;

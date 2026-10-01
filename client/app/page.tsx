@@ -24,7 +24,7 @@ export default function Home() {
   const updateField = (field: keyof FormState, value: string) => {
     setForm((prev) => ({
       ...prev,
-      [field]: field === "gstin" ? value.toUpperCase() : value,
+      [field]: field === "gstin" || field === "pan" ? value.toUpperCase() : value,
     }));
     setErrors((prev) => ({ ...prev, [field]: undefined }));
   };

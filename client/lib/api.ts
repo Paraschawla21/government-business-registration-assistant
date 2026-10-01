@@ -16,6 +16,7 @@ export async function submitBusinessProfile(
       activity: form.activity,
       operations: form.operations,
       gstin: form.gstin,
+      pan: form.pan,
     }),
   });
 

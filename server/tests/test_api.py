@@ -15,6 +15,7 @@ def test_evaluate_endpoint_returns_report_shape():
         "activity": "Building SaaS products for enterprises",
         "operations": "both",
         "gstin": None,
+        "pan": None,
     }
 
     response = client.post("/api/evaluate", json=payload)

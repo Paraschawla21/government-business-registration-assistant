@@ -13,6 +13,7 @@ def _make_profile(industry: str, employees: int, operations: str, turnover: str)
         activity="Software and services business",
         operations=operations,
         gstin=None,
+        pan=None,
     )
 
 
@@ -55,6 +56,7 @@ def test_professional_tax_state_logic():
         activity="Consulting services",
         operations="offline",
         gstin=None,
+        pan=None,
     )
 
     applicable_results, _ = evaluate_registrations(applicable_profile)
@@ -69,3 +71,48 @@ def test_professional_tax_state_logic():
 
     assert applicable.status == "Applicable"
     assert uncertain.status == "More Info Required"
+
+
+def test_all_catalog_registrations_are_returned():
+    profile = _make_profile("Information Technology", 5, "both", "20-40 Lakhs")
+    results, _ = evaluate_registrations(profile)
+
+    names = {item.name for item in results}
+    expected = {
+        "PAN and TAN",
+        "GST Registration",
+        "Udyam (MSME) Registration",
+        "Shops and Establishments Registration",
+        "EPFO Registration",
+        "ESIC Registration",
+        "FSSAI Registration/Licence",
+        "Professional Tax Registration",
+        "Trade Licence",
+        "Import Export Code (IEC)",
+    }
+    assert names == expected
+
+
+def test_iec_activity_keyword_matching():
+    profile = BusinessProfile(
+        businessType="Private Limited",
+        industry="Logistics & Transportation",
+        state="Maharashtra",
+        city="Mumbai",
+        employees=12,
+        turnover="40 Lakhs - 1 Crore",
+        activity="We import components and export finished kits globally",
+        operations="both",
+        gstin=None,
+        pan=None,
+    )
+    results, _ = evaluate_registrations(profile)
+    iec = next(item for item in results if item.name == "Import Export Code (IEC)")
+    assert iec.status == "Applicable"
+
+
+def test_trade_license_for_online_only_is_more_info():
+    profile = _make_profile("Information Technology", 4, "online", "Under 20 Lakhs")
+    results, _ = evaluate_registrations(profile)
+    trade = next(item for item in results if item.name == "Trade Licence")
+    assert trade.status == "More Info Required"

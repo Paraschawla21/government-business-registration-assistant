@@ -168,6 +168,23 @@ export function BusinessProfileForm({
             </p>
           </Field>
         </div>
+
+        <div className="sm:col-span-2">
+          <Field label="PAN" error={errors.pan} optionalHint>
+            <input
+              type="text"
+              placeholder="e.g. ABCDE1234F"
+              maxLength={10}
+              value={form.pan}
+              onChange={(e) => onFieldChange("pan", e.target.value)}
+              className={inputClasses(!!errors.pan) + " uppercase tracking-wide"}
+            />
+            <p className="mt-1.5 flex items-start gap-1.5 text-xs text-slate-400">
+              <SparkleIcon />
+              If you provide PAN, the app can attempt live PAN verification through configured APIs.
+            </p>
+          </Field>
+        </div>
       </div>
 
       {status === "error" && (
