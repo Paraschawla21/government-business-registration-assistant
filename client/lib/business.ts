@@ -115,6 +115,7 @@ export type ApplicabilityStatus =
 
 export type RegistrationAssessment = {
   name: string;
+  portal_routing_note?: string | null;
   status: ApplicabilityStatus;
   why_relevant: string;
   required_documents: string[];

@@ -89,6 +89,12 @@ export function SuccessState({
                     </a>
                   </p>
                 )}
+
+                {item.portal_routing_note && (
+                  <p className="mt-1 text-xs font-medium text-indigo-600">
+                    {item.portal_routing_note}
+                  </p>
+                )}
               </div>
             ))}
           </div>
