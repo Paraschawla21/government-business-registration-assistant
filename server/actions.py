@@ -23,6 +23,14 @@ def _clean_line(text: str, max_len: int = 110) -> str:
     return compact[:max_len]
 
 
+def _mask_secret(value: str) -> str:
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "****"
+    return f"{value[:2]}***{value[-2:]}"
+
+
 def generate_markdown_report(report: BusinessSetupReport) -> ActionResult:
     lines: list[str] = []
     lines.append("# Government Business Setup Report")
@@ -173,13 +181,17 @@ def generate_pdf_report(report: BusinessSetupReport) -> ActionResult:
 
 def create_google_sheet_tracker(report: BusinessSetupReport) -> ActionResult:
     sheets_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
+    range_name = os.getenv("GOOGLE_SHEETS_RANGE", "Sheet1!A1")
+
+    service_account_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    service_account_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "").strip()
     api_key = os.getenv("GOOGLE_SHEETS_API_KEY", "").strip()
 
-    if not sheets_id or not api_key:
+    if not sheets_id:
         return ActionResult(
             name="google_sheet_tracker",
             status="skipped",
-            message="Google Sheets integration not configured (requires GOOGLE_SHEETS_ID and GOOGLE_SHEETS_API_KEY).",
+            message="Google Sheets integration not configured (GOOGLE_SHEETS_ID missing).",
         )
 
     rows = [
@@ -204,8 +216,59 @@ def create_google_sheet_tracker(report: BusinessSetupReport) -> ActionResult:
             ]
         )
 
+    # Preferred path: Service Account
+    if service_account_json or service_account_file:
+        try:
+            from google.oauth2 import service_account
+            from googleapiclient.discovery import build
+        except Exception:
+            return ActionResult(
+                name="google_sheet_tracker",
+                status="fallback",
+                message="google-api-python-client or google-auth not installed for service account flow.",
+            )
+
+        try:
+            if service_account_json:
+                creds_info = json.loads(service_account_json)
+            else:
+                with open(service_account_file, "r", encoding="utf-8") as fh:
+                    creds_info = json.load(fh)
+
+            credentials = service_account.Credentials.from_service_account_info(
+                creds_info,
+                scopes=["https://www.googleapis.com/auth/spreadsheets"],
+            )
+            service = build("sheets", "v4", credentials=credentials)
+            service.spreadsheets().values().append(
+                spreadsheetId=sheets_id,
+                range=range_name,
+                valueInputOption="RAW",
+                body={"values": rows},
+            ).execute()
+            return ActionResult(
+                name="google_sheet_tracker",
+                status="generated",
+                message="Checklist appended using Google service account.",
+                artifact_url=f"https://docs.google.com/spreadsheets/d/{sheets_id}",
+            )
+        except Exception:
+            return ActionResult(
+                name="google_sheet_tracker",
+                status="fallback",
+                message="Service account Sheets append failed. Verify sheet sharing with service account email.",
+            )
+
+    # Fallback path: API key (less secure; best-effort)
+    if not api_key:
+        return ActionResult(
+            name="google_sheet_tracker",
+            status="skipped",
+            message="Google Sheets integration not configured (no service account and no API key).",
+        )
+
     endpoint = (
-        f"https://sheets.googleapis.com/v4/spreadsheets/{sheets_id}/values/Sheet1!A1:append"
+        f"https://sheets.googleapis.com/v4/spreadsheets/{sheets_id}/values/{range_name}:append"
         f"?valueInputOption=RAW&key={api_key}"
     )
 
@@ -223,26 +286,26 @@ def create_google_sheet_tracker(report: BusinessSetupReport) -> ActionResult:
                 return ActionResult(
                     name="google_sheet_tracker",
                     status="fallback",
-                    message=f"Google Sheets append failed with status {response.status}.",
+                    message=f"Google Sheets append failed with status {response.status} (API key flow).",
                 )
 
         return ActionResult(
             name="google_sheet_tracker",
             status="generated",
-            message="Checklist appended to configured Google Sheet.",
+            message="Checklist appended to configured Google Sheet (API key flow).",
             artifact_url=f"https://docs.google.com/spreadsheets/d/{sheets_id}",
         )
     except error.HTTPError as exc:
         return ActionResult(
             name="google_sheet_tracker",
             status="fallback",
-            message=f"Google Sheets API HTTP error: {exc.code}",
+            message=f"Google Sheets API HTTP error: {exc.code} (API key flow).",
         )
     except Exception:
         return ActionResult(
             name="google_sheet_tracker",
             status="fallback",
-            message="Google Sheets tracker creation failed.",
+            message="Google Sheets tracker creation failed (API key flow).",
         )
 
 
@@ -293,7 +356,10 @@ def send_email_report(report: BusinessSetupReport, markdown_report: Optional[Act
         return ActionResult(
             name="email_delivery",
             status="fallback",
-            message="Email delivery failed.",
+            message=(
+                "Email delivery failed. Validate SMTP configuration and app password policy. "
+                f"Host={host}, Port={port}, Username={_mask_secret(username)}"
+            ),
         )
 
 

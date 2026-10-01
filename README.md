@@ -68,9 +68,8 @@ more information or manual verification is required, rather than guessing.
 - **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS
 - **Backend:** Python, FastAPI, Pydantic
 - **AI/LLM:** Ollama (local LLM), JSON-schema-constrained structured output
-- **Planned:** Government data sources / APIs (e.g. APISetu, GST verification),
-  a deterministic rule-engine knowledge base, and an action layer (PDF/Markdown
-  report, Google Sheet tracker, email notifications)
+- **Integrations:** Setu GST/PAN verification, Google Sheets, SMTP email
+- **Actions:** Markdown/CSV/PDF report generation, tracker append, email dispatch
 
 ## Repo structure
 
@@ -136,6 +135,9 @@ artifacts in the final response:
 
 The frontend exposes download buttons for these generated artifacts.
 
+Generated artifacts are also persisted to backend storage and returned as
+`artifact_url` links for retrieval.
+
 The backend rule engine (`server/registrations.py`) evaluates the business
 profile deterministically against this catalog and returns stable JSON output
 for identical inputs.
@@ -168,12 +170,18 @@ export VERIFICATION_MODE="sandbox"
 export MAX_REQUEST_BYTES="65536"
 export GOOGLE_SHEETS_ID="your_google_sheet_id"
 export GOOGLE_SHEETS_API_KEY="your_google_api_key"
+export GOOGLE_SHEETS_RANGE="Sheet1!A1"
+export GOOGLE_SERVICE_ACCOUNT_FILE="/absolute/path/to/service-account.json"
 export SMTP_HOST="smtp.gmail.com"
 export SMTP_PORT="587"
 export SMTP_USERNAME="your_email"
 export SMTP_PASSWORD="your_app_password"
 export REPORT_FROM_EMAIL="your_email"
 export REPORT_TO_EMAIL="recipient_email"
+export RATE_LIMIT_REQUESTS_PER_MINUTE="60"
+export CORS_ALLOW_ORIGINS="http://localhost:3000"
+export ARTIFACT_BASE_URL="http://127.0.0.1:8000"
+export ARTIFACT_BASE_DIR="./artifacts"
 ```
 
 If these variables are not set, the app still runs and returns deterministic
@@ -211,18 +219,23 @@ Open [http://localhost:3000](http://localhost:3000). The frontend proxies
 ## Roadmap
 
 - [x] Business profile intake form with validation (business type, industry,
-      state, city, employees, turnover, activity, online/offline, GSTIN)
-- [x] FastAPI backend with Ollama structured/schema-validated output
-- [ ] Curated, verified knowledge base of registrations/licences (GST, Udyam,
-      Shop & Establishment, Professional Tax, FSSAI, EPFO, ESIC, etc.)
-- [ ] Deterministic rule engine: profile → Applicable / More Info Required /
-      Not Relevant, per registration
-- [ ] Government API integrations (e.g. APISetu, GST verification)
-- [ ] LLM reasoning layer: explain relevance, sequence steps, phrase
-      follow-up questions — constrained to only the data provided
-- [ ] Action layer: downloadable report, Google Sheet tracker, email delivery
+      state, city, employees, turnover, activity, online/offline, GSTIN, PAN)
+- [x] Curated, verified knowledge base of registrations/licences
+- [x] Deterministic rule engine: profile → Applicable / More Info Required /
+      Not Relevant
+- [x] Government API integrations (Setu GST/PAN with mock/sandbox/live modes)
+- [x] LLM reasoning layer for constrained wording/prioritization
+- [x] Action layer: downloadable reports, Google Sheet tracker, email delivery
+- [x] Security baseline: configurable CORS, request limits, rate limiting
+- [x] Tests: rules, API, actions, verification modes, end-to-end API flow
 - [ ] Bonus: multilingual support, voice input, document-readiness checks,
       human-in-the-loop approval
+
+## Quality and evidence
+
+- Architecture notes: `docs/architecture.md`
+- Limitations and legal caveats: `docs/limitations.md`
+- Manual scenario matrix: `docs/manual-test-matrix.md`
 
 ## Disclaimer
 

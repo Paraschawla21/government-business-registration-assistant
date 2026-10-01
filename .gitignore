@@ -45,5 +45,6 @@ next-env.d.ts
 # python
 server/env/
 server/__pycache__/
+server/artifacts/
 **/__pycache__/
 *.pyc

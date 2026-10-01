@@ -5,3 +5,5 @@ ollama
 pytest
 httpx
 reportlab
+google-api-python-client
+google-auth

@@ -7,6 +7,7 @@ from schemas import (
 )
 
 from actions import generate_pdf_report
+from actions import create_google_sheet_tracker, send_email_report
 
 
 def _sample_report() -> BusinessSetupReport:
@@ -55,3 +56,26 @@ def test_pdf_action_generates_base64_artifact():
     assert artifact.status == "generated"
     assert artifact.artifact_filename == "business_setup_report.pdf"
     assert artifact.artifact_base64 is not None
+
+
+def test_google_sheet_tracker_skips_without_config(monkeypatch):
+    monkeypatch.delenv("GOOGLE_SHEETS_ID", raising=False)
+    monkeypatch.delenv("GOOGLE_SHEETS_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_SERVICE_ACCOUNT_FILE", raising=False)
+    monkeypatch.delenv("GOOGLE_SERVICE_ACCOUNT_JSON", raising=False)
+    artifact = create_google_sheet_tracker(_sample_report())
+    assert artifact.status == "skipped"
+
+
+def test_email_report_skips_without_config(monkeypatch):
+    for key in [
+        "SMTP_HOST",
+        "SMTP_PORT",
+        "SMTP_USERNAME",
+        "SMTP_PASSWORD",
+        "REPORT_FROM_EMAIL",
+        "REPORT_TO_EMAIL",
+    ]:
+        monkeypatch.delenv(key, raising=False)
+    artifact = send_email_report(_sample_report(), None)
+    assert artifact.status == "skipped"
