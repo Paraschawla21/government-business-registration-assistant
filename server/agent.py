@@ -112,7 +112,7 @@ def _maybe_llm_enrich(
         return default_summary, default_sequence
 
     try:
-        model_name = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+        model_name = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
         response = ollama.chat(
             model=model_name,
             messages=[

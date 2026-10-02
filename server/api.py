@@ -22,6 +22,8 @@ app = FastAPI(title="AI Tool Evaluator API")
 MAX_CONTENT_LENGTH = int(os.getenv("MAX_REQUEST_BYTES", "65536"))
 RATE_LIMIT_PER_MINUTE = int(os.getenv("RATE_LIMIT_REQUESTS_PER_MINUTE", "60"))
 ARTIFACT_BASE_URL = os.getenv("ARTIFACT_BASE_URL", "http://127.0.0.1:8000")
+ARTIFACT_RETENTION_HOURS = int(os.getenv("ARTIFACT_RETENTION_HOURS", "24"))
+MAX_ARTIFACT_RUNS = int(os.getenv("MAX_ARTIFACT_RUNS", "200"))
 
 _request_windows: dict[str, deque[float]] = defaultdict(deque)
 
@@ -41,7 +43,7 @@ def _mask_secret(value: str) -> str:
 
 def _check_ollama() -> dict:
     llm_enabled = os.getenv("AGENT_ENABLE_LLM", "false").strip().lower() == "true"
-    model_name = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+    model_name = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
 
     if not llm_enabled:
         return {
@@ -297,7 +299,40 @@ def _persist_artifacts(report: BusinessSetupReport) -> BusinessSetupReport:
             file_path.write_bytes(base64.b64decode(result.artifact_base64))
             result.artifact_url = f"{ARTIFACT_BASE_URL}/artifacts/{run_id}/{result.artifact_filename}"
 
+    _cleanup_artifacts()
     return report
+
+
+def _cleanup_artifacts() -> None:
+    now = time.time()
+    retention_seconds = ARTIFACT_RETENTION_HOURS * 3600
+
+    run_dirs = [path for path in ARTIFACT_DIR.iterdir() if path.is_dir()]
+
+    # Remove old runs beyond retention window.
+    for run_dir in run_dirs:
+        try:
+            if now - run_dir.stat().st_mtime > retention_seconds:
+                for child in run_dir.iterdir():
+                    child.unlink(missing_ok=True)
+                run_dir.rmdir()
+        except Exception:
+            continue
+
+    # Cap number of retained runs.
+    run_dirs = [path for path in ARTIFACT_DIR.iterdir() if path.is_dir()]
+    if len(run_dirs) <= MAX_ARTIFACT_RUNS:
+        return
+
+    run_dirs.sort(key=lambda p: p.stat().st_mtime)
+    overflow = len(run_dirs) - MAX_ARTIFACT_RUNS
+    for run_dir in run_dirs[:overflow]:
+        try:
+            for child in run_dir.iterdir():
+                child.unlink(missing_ok=True)
+            run_dir.rmdir()
+        except Exception:
+            continue
 
 
 @app.post("/api/evaluate", response_model=BusinessSetupReport)

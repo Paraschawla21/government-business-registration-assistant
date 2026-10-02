@@ -188,7 +188,7 @@ source env/bin/activate
 pip install -r requirements.txt
 
 # Requires Ollama running locally with the model pulled:
-ollama pull qwen2.5-coder:7b
+ollama pull qwen2.5:14b
 
 uvicorn api:app --reload --port 8000
 ```
@@ -200,7 +200,7 @@ export SETU_GST_VERIFY_URL="https://api.setu.co/data/gst/{gstin}"
 export SETU_BEARER_TOKEN="your_setu_bearer_token"
 export SETU_PAN_VERIFY_URL="https://api.setu.co/data/pan/{pan}"
 export AGENT_ENABLE_LLM="false"
-export OLLAMA_MODEL="qwen2.5-coder:7b"
+export OLLAMA_MODEL="qwen2.5:14b"
 export VERIFICATION_MODE="sandbox"
 export MAX_REQUEST_BYTES="65536"
 export GOOGLE_SHEETS_ID="your_google_sheet_id"
@@ -217,6 +217,8 @@ export RATE_LIMIT_REQUESTS_PER_MINUTE="60"
 export CORS_ALLOW_ORIGINS="http://localhost:3000"
 export ARTIFACT_BASE_URL="http://127.0.0.1:8000"
 export ARTIFACT_BASE_DIR="./artifacts"
+export ARTIFACT_RETENTION_HOURS="24"
+export MAX_ARTIFACT_RUNS="200"
 ```
 
 If these variables are not set, the app still runs and returns deterministic
@@ -321,3 +323,13 @@ source before acting.
 The tool may surface `More Info Required` when details are missing or where
 state/industry interpretation is uncertain. In such cases, users should verify
 with the relevant government department or a qualified professional before filing.
+
+## Production Safety Notes
+
+- Never commit `.env` or service-account key files.
+- Restrict API keys and rotate them periodically.
+- Use `VERIFICATION_MODE=mock` for demos; use `sandbox/live` only with approved credentials.
+- Artifacts are stored under `ARTIFACT_BASE_DIR`; retention is controlled by:
+  - `ARTIFACT_RETENTION_HOURS`
+  - `MAX_ARTIFACT_RUNS`
+- For public deployment, protect `/artifacts` endpoints with authentication or signed URLs.
