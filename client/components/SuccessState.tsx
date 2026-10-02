@@ -157,7 +157,7 @@ export function SuccessState({
           {report.action_results && report.action_results.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-semibold text-slate-700">Generated outputs</p>
-              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="mt-2 space-y-2">
                 {report.action_results.map((result) => (
                   <div key={result.name} className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-3">
                     <div className="flex items-center justify-between gap-2">
@@ -177,7 +177,7 @@ export function SuccessState({
                             onClick={() =>
                               downloadTextArtifact(result.artifact_filename!, result.artifact_content!)
                             }
-                            className="cursor-pointer rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+                            className="cursor-pointer rounded-md bg-blue-700 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
                           >
                             Download
                           </button>
@@ -191,7 +191,7 @@ export function SuccessState({
                             }
                             className="cursor-pointer rounded-md bg-blue-700 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
                           >
-                            Download PDF
+                            Download
                           </button>
                         )}
 
@@ -200,7 +200,7 @@ export function SuccessState({
                             href={result.artifact_url}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-block rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                            className="inline-block rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100"
                           >
                             Open Link
                           </a>
