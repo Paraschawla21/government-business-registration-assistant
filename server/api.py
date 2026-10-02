@@ -1,8 +1,12 @@
 import os
+import smtplib
+import socket
+import ssl
 import time
 import uuid
 from collections import defaultdict, deque
 from pathlib import Path
+from urllib import error, request
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,6 +29,213 @@ _request_windows: dict[str, deque[float]] = defaultdict(deque)
 def _cors_origins() -> list[str]:
     raw = os.getenv("CORS_ALLOW_ORIGINS", "http://localhost:3000")
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
+
+
+def _mask_secret(value: str) -> str:
+    if not value:
+        return ""
+    if len(value) <= 4:
+        return "****"
+    return f"{value[:2]}***{value[-2:]}"
+
+
+def _check_ollama() -> dict:
+    llm_enabled = os.getenv("AGENT_ENABLE_LLM", "false").strip().lower() == "true"
+    model_name = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+
+    if not llm_enabled:
+        return {
+            "name": "ollama",
+            "status": "skipped",
+            "configured": False,
+            "reachable": False,
+            "message": "LLM orchestration is disabled (AGENT_ENABLE_LLM=false).",
+        }
+
+    try:
+        import ollama
+
+        client = ollama.Client()
+        listed = client.list()
+        model_names = [item.get("name", "") for item in listed.get("models", [])]
+        has_model = any(name.startswith(model_name) for name in model_names)
+        return {
+            "name": "ollama",
+            "status": "ok" if has_model else "degraded",
+            "configured": True,
+            "reachable": True,
+            "model": model_name,
+            "message": (
+                f"Ollama reachable. Model {'found' if has_model else 'not found'}: {model_name}."
+            ),
+        }
+    except Exception as exc:
+        return {
+            "name": "ollama",
+            "status": "error",
+            "configured": True,
+            "reachable": False,
+            "model": model_name,
+            "message": f"Ollama check failed: {type(exc).__name__}",
+        }
+
+
+def _check_google_sheets() -> dict:
+    sheets_id = os.getenv("GOOGLE_SHEETS_ID", "").strip()
+    range_name = os.getenv("GOOGLE_SHEETS_RANGE", "Sheet1!A1")
+    service_account_json = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+    service_account_file = os.getenv("GOOGLE_SERVICE_ACCOUNT_FILE", "").strip()
+    api_key = os.getenv("GOOGLE_SHEETS_API_KEY", "").strip()
+
+    if not sheets_id:
+        return {
+            "name": "google_sheets",
+            "status": "skipped",
+            "configured": False,
+            "reachable": False,
+            "message": "GOOGLE_SHEETS_ID is missing.",
+        }
+
+    # Preferred: service account
+    if service_account_json or service_account_file:
+        try:
+            from google.oauth2 import service_account
+            from googleapiclient.discovery import build
+
+            if service_account_json:
+                import json
+
+                creds_info = json.loads(service_account_json)
+            else:
+                import json
+
+                with open(service_account_file, "r", encoding="utf-8") as fh:
+                    creds_info = json.load(fh)
+
+            credentials = service_account.Credentials.from_service_account_info(
+                creds_info,
+                scopes=["https://www.googleapis.com/auth/spreadsheets"],
+            )
+            service = build("sheets", "v4", credentials=credentials)
+            service.spreadsheets().get(
+                spreadsheetId=sheets_id,
+                fields="spreadsheetId",
+            ).execute()
+            return {
+                "name": "google_sheets",
+                "status": "ok",
+                "configured": True,
+                "reachable": True,
+                "mode": "service_account",
+                "range": range_name,
+                "message": "Google Sheets reachable via service account.",
+            }
+        except Exception as exc:
+            return {
+                "name": "google_sheets",
+                "status": "error",
+                "configured": True,
+                "reachable": False,
+                "mode": "service_account",
+                "range": range_name,
+                "message": f"Service account check failed: {type(exc).__name__}",
+            }
+
+    # Fallback: API key
+    if api_key:
+        endpoint = (
+            f"https://sheets.googleapis.com/v4/spreadsheets/{sheets_id}"
+            f"?fields=spreadsheetId&key={api_key}"
+        )
+        req = request.Request(endpoint, method="GET")
+        try:
+            with request.urlopen(req, timeout=10) as response:
+                if 200 <= response.status < 300:
+                    return {
+                        "name": "google_sheets",
+                        "status": "ok",
+                        "configured": True,
+                        "reachable": True,
+                        "mode": "api_key",
+                        "range": range_name,
+                        "message": "Google Sheets reachable via API key.",
+                    }
+        except error.HTTPError as exc:
+            return {
+                "name": "google_sheets",
+                "status": "error",
+                "configured": True,
+                "reachable": False,
+                "mode": "api_key",
+                "range": range_name,
+                "message": f"API key check failed with HTTP {exc.code}.",
+            }
+        except Exception as exc:
+            return {
+                "name": "google_sheets",
+                "status": "error",
+                "configured": True,
+                "reachable": False,
+                "mode": "api_key",
+                "range": range_name,
+                "message": f"API key check failed: {type(exc).__name__}",
+            }
+
+    return {
+        "name": "google_sheets",
+        "status": "skipped",
+        "configured": False,
+        "reachable": False,
+        "message": "No service account or API key configured.",
+    }
+
+
+def _check_smtp() -> dict:
+    host = os.getenv("SMTP_HOST", "").strip()
+    port = int(os.getenv("SMTP_PORT", "0") or "0")
+    username = os.getenv("SMTP_USERNAME", "").strip()
+    password = os.getenv("SMTP_PASSWORD", "").strip()
+    sender = os.getenv("REPORT_FROM_EMAIL", "").strip()
+    recipient = os.getenv("REPORT_TO_EMAIL", "").strip()
+
+    if not all([host, port, username, password, sender, recipient]):
+        return {
+            "name": "smtp_email",
+            "status": "skipped",
+            "configured": False,
+            "reachable": False,
+            "message": "SMTP env vars are incomplete.",
+        }
+
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP(host, port, timeout=12) as server:
+            server.ehlo()
+            if server.has_extn("starttls"):
+                server.starttls(context=context)
+                server.ehlo()
+            server.login(username, password)
+        return {
+            "name": "smtp_email",
+            "status": "ok",
+            "configured": True,
+            "reachable": True,
+            "host": host,
+            "port": port,
+            "username": _mask_secret(username),
+            "message": "SMTP connectivity and login succeeded.",
+        }
+    except (smtplib.SMTPException, socket.error) as exc:
+        return {
+            "name": "smtp_email",
+            "status": "error",
+            "configured": True,
+            "reachable": False,
+            "host": host,
+            "port": port,
+            "username": _mask_secret(username),
+            "message": f"SMTP check failed: {type(exc).__name__}",
+        }
 
 
 ARTIFACT_DIR = Path(
@@ -100,3 +311,13 @@ async def evaluate_business_profile(payload: BusinessProfile):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/health/integrations")
+async def integration_health():
+    checks = [_check_ollama(), _check_google_sheets(), _check_smtp()]
+    overall = "ok" if all(item.get("status") in {"ok", "skipped"} for item in checks) else "degraded"
+    return {
+        "status": overall,
+        "checks": checks,
+    }
