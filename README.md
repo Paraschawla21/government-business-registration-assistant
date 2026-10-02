@@ -1,7 +1,7 @@
 # Government Business Registration Assistant
 
-[![Frontend Build](https://img.shields.io/badge/frontend-build-passing-brightgreen)](#running-locally)
-[![Backend Tests](https://img.shields.io/badge/backend-tests-passing-brightgreen)](#tests)
+[![Frontend Build](https://img.shields.io/static/v1?label=frontend&message=build%20passing&color=brightgreen)](#running-locally)
+[![Backend Tests](https://img.shields.io/static/v1?label=backend&message=tests%20passing&color=brightgreen)](#tests)
 [![License](https://img.shields.io/badge/license-MIT-blue)](#disclaimer)
 
 An AI Agent workflow that helps first-time entrepreneurs in India understand which
