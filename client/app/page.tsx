@@ -67,9 +67,9 @@ export default function Home() {
       <div className="pointer-events-none absolute right-0 top-28 h-96 w-96 rounded-full bg-indigo-200/55 blur-3xl" />
       <div className="pointer-events-none absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-emerald-200/35 blur-3xl" />
 
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
-        <div className="grid gap-6 lg:grid-cols-[1.05fr_1fr] lg:items-start">
-          <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 shadow-lg shadow-slate-200/60 backdrop-blur sm:p-8">
+      <div className="relative mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
+        <div className="space-y-6">
+          <section className="rounded-3xl border border-slate-200/80 bg-white/80 p-6 text-center shadow-lg shadow-slate-200/60 backdrop-blur sm:p-8">
             <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-sky-700 ring-1 ring-inset ring-sky-200">
               <span className="h-2 w-2 rounded-full bg-sky-500" />
               Government Business Registration Assistant
@@ -82,7 +82,7 @@ export default function Home() {
               and generate actionable outputs you can use instantly.
             </p>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 text-left sm:grid-cols-2">
               <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                 <p className="text-sm font-semibold text-slate-800">Deterministic core</p>
                 <p className="mt-1 text-xs text-slate-500">Rule engine + verified links + source-traceable decisions.</p>
