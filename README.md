@@ -33,6 +33,12 @@ Open `http://localhost:3000` and submit a sample business profile to see:
 - official links and source logging
 - downloadable markdown/csv/pdf outputs
 
+Integration diagnostics endpoint:
+
+- `GET http://127.0.0.1:8000/api/health/integrations`
+- Validates current Ollama, Google Sheets, and SMTP setup with clear status and
+  failure hints.
+
 > Status: early-stage / actively being built. This repo currently contains the
 > business-profile intake UI and the backend scaffolding (FastAPI + local LLM via
 > Ollama, structured/schema-validated output). The rule-engine, government
