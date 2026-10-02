@@ -1,5 +1,25 @@
 import type { BusinessSetupReport } from "@/lib/business";
 
+function prettyActionName(name: string) {
+  return name
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function statusClasses(status: string) {
+  const normalized = status.toLowerCase();
+  if (normalized === "generated" || normalized === "sent") {
+    return "bg-emerald-100 text-emerald-700";
+  }
+  if (normalized === "fallback") {
+    return "bg-amber-100 text-amber-700";
+  }
+  if (normalized === "skipped") {
+    return "bg-slate-100 text-slate-600";
+  }
+  return "bg-blue-100 text-blue-700";
+}
+
 function downloadTextArtifact(filename: string, content: string) {
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -137,42 +157,55 @@ export function SuccessState({
           {report.action_results && report.action_results.length > 0 && (
             <div className="mt-4">
               <p className="text-sm font-semibold text-slate-700">Generated outputs</p>
-              <div className="mt-2 space-y-2">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {report.action_results.map((result) => (
-                  <div key={result.name} className="rounded-md border border-slate-200 px-3 py-2">
-                    <p className="text-sm font-semibold text-slate-800">{result.name}</p>
-                    <p className="text-xs text-slate-600">{result.message}</p>
-                    {result.artifact_content && result.artifact_filename && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          downloadTextArtifact(result.artifact_filename!, result.artifact_content!)
-                        }
-                        className="mt-2 cursor-pointer rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
-                      >
-                        Download {result.artifact_filename}
-                      </button>
-                    )}
-                    {result.artifact_base64 && result.artifact_filename && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          downloadPdfArtifact(result.artifact_filename!, result.artifact_base64!)
-                        }
-                        className="mt-2 ml-2 cursor-pointer rounded-md bg-blue-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
-                      >
-                        Download {result.artifact_filename}
-                      </button>
-                    )}
-                    {result.artifact_url && (
-                      <a
-                        href={result.artifact_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-2 ml-2 inline-block rounded-md border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                      >
-                        Open Link
-                      </a>
+                  <div key={result.name} className="rounded-lg border border-slate-200 bg-slate-50/60 px-3 py-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-slate-800">{prettyActionName(result.name)}</p>
+                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${statusClasses(result.status)}`}>
+                        {result.status}
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600">{result.message}</p>
+
+                    {(result.artifact_content || result.artifact_base64 || result.artifact_url) && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        {result.artifact_content && result.artifact_filename && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              downloadTextArtifact(result.artifact_filename!, result.artifact_content!)
+                            }
+                            className="cursor-pointer rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+                          >
+                            Download
+                          </button>
+                        )}
+
+                        {result.artifact_base64 && result.artifact_filename && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              downloadPdfArtifact(result.artifact_filename!, result.artifact_base64!)
+                            }
+                            className="cursor-pointer rounded-md bg-blue-700 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-blue-600"
+                          >
+                            Download PDF
+                          </button>
+                        )}
+
+                        {result.artifact_url && (
+                          <a
+                            href={result.artifact_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-block rounded-md border border-slate-300 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
+                          >
+                            Open Link
+                          </a>
+                        )}
+                      </div>
                     )}
                   </div>
                 ))}
